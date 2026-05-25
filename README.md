@@ -1,30 +1,31 @@
-# 10x Astro Starter
+# SpendLens
 
 ![](./public/template.png)
 
-A modern, opinionated starter template for building fast, accessible web applications.
+A goal-anchored spending insight app. Users connect a (simulated) bank, set savings goals, and receive specific expense-cutting suggestions tied to each goal.
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v6 - Modern web framework with server-first rendering
-- [React](https://react.dev/) v19 - UI library for interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4 - Utility-first CSS framework
-- [Supabase](https://supabase.com/) - Authentication and backend-as-a-service
-- [Cloudflare Workers](https://workers.cloudflare.com/) - Edge deployment runtime
+- [Astro](https://astro.build/) v6 — Modern web framework with server-first rendering
+- [React](https://react.dev/) v19 — UI library for interactive components
+- [TypeScript](https://www.typescriptlang.org/) v5 — Type-safe JavaScript
+- [Tailwind CSS](https://tailwindcss.com/) v4 — Utility-first CSS framework
+- [Supabase](https://supabase.com/) — Authentication and backend-as-a-service
+- [Vercel](https://vercel.com/) — Serverless deployment runtime (via `@astrojs/vercel`)
 
 ## Prerequisites
 
 - Node.js v22.14.0 (as specified in `.nvmrc`)
 - npm (comes with Node.js)
+- [Vercel CLI](https://vercel.com/docs/cli) for production deploys: `npm i -g vercel`
 
 ## Getting Started
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
+git clone https://github.com/mmajewski-fp/spendlens.git
+cd spendlens
 ```
 
 2. Install dependencies:
@@ -35,11 +36,13 @@ npm install
 
 3. Set up Supabase and configure environment variables — see [Supabase Configuration](#supabase-configuration) below.
 
-4. Create a `.dev.vars` file for local Cloudflare dev secrets:
+4. Create a `.env` file for local Astro dev:
 
 ```bash
-cp .env.example .dev.vars
+cp .env.example .env
 ```
+
+For Vercel-runtime parity (`vercel dev`), additionally create a `.env.local` with the same values — `.env.local` is what the Vercel CLI reads.
 
 5. Run the development server:
 
@@ -49,12 +52,12 @@ npm run dev
 
 ## Available Scripts
 
-- `npm run dev` - Start development server (Cloudflare workerd runtime)
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint with type-checked rules
-- `npm run lint:fix` - Auto-fix ESLint issues
-- `npm run format` - Run Prettier
+- `npm run dev` — Start Astro development server
+- `npm run build` — Build for production
+- `npm run preview` — Preview production build
+- `npm run lint` — Run ESLint with type-checked rules
+- `npm run lint:fix` — Auto-fix ESLint issues
+- `npm run format` — Run Prettier
 
 ## Project Structure
 
@@ -65,9 +68,10 @@ npm run dev
 │ ├── pages/ # Astro pages
 │ │ └── api/ # API endpoints
 │ ├── components/ # UI components (Astro & React)
-│ └── assets/ # Static assets
+│ └── lib/ # Utilities, Supabase client, services
 ├── public/ # Public assets
-├── wrangler.jsonc # Cloudflare Workers config
+├── supabase/ # Local Supabase config + migrations
+└── context/ # Foundation docs, deployment plan, PRD
 ```
 
 ## Supabase Configuration
@@ -96,7 +100,7 @@ npx supabase init
 npx supabase start
 ```
 
-4. Copy the credentials printed by the CLI into your `.env` and `.dev.vars`:
+4. Copy the credentials printed by the CLI into your `.env` (and `.env.local` if you use `vercel dev`):
 
 ```
 SUPABASE_URL=http://127.0.0.1:54321
@@ -111,11 +115,11 @@ npx supabase stop
 
 The local Studio UI is available at `http://localhost:54323`.
 
-No database tables or migrations are required — this project uses Supabase Auth's built-in `auth.users` table only.
+No application database tables or migrations are required yet — this project currently uses Supabase Auth's built-in `auth.users` table only.
 
 ### Using a cloud Supabase project instead
 
-If you prefer to use a hosted Supabase project, add these variables to your `.env` and `.dev.vars` files:
+If you prefer to use a hosted Supabase project, add these variables to your `.env` (and `.env.local`) files:
 
 | Variable       | Description                                                |
 | -------------- | ---------------------------------------------------------- |
@@ -150,25 +154,36 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 
 ## Deployment
 
-This project deploys to [Cloudflare Workers](https://workers.cloudflare.com/).
+This project deploys to [Vercel](https://vercel.com/) via the official `@astrojs/vercel` adapter. The platform decision and operational notes (preview URLs, rollback, secrets, logs) are documented in [context/foundation/infrastructure.md](./context/foundation/infrastructure.md). The full first-release migration plan lives in [context/deployment/deploy-plan.md](./context/deployment/deploy-plan.md).
 
-1. Build the project:
+### One-time project setup
 
-```bash
-npm run build
-```
-
-2. Deploy with Wrangler:
+1. Install the CLI and link the repo:
 
 ```bash
-npx wrangler deploy
+npm i -g vercel
+vercel link
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
+2. Add the production secrets (and preview secrets if you want previews to authenticate):
+
+```bash
+vercel env add SUPABASE_URL production
+vercel env add SUPABASE_KEY production
+vercel env add SUPABASE_URL preview
+vercel env add SUPABASE_KEY preview
+```
+
+### Deploy flow
+
+- **Auto-deploy on merge**: pushing to `main` triggers a production deploy via Vercel's GitHub integration (configured in the Vercel dashboard under "Git").
+- **Manual deploy**: `vercel --prod` from a clean working tree.
+- **Rollback**: `vercel rollback <deployment-url>` (Hobby plan: previous deploy only — tag each release with `git tag` as a fallback rollback anchor).
+- **Logs**: `vercel logs <deployment-url> --follow`.
 
 ## CI
 
-GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+GitHub Actions runs `lint + build` on every push and PR to `main` (see [.github/workflows/ci.yml](.github/workflows/ci.yml)). Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step. Vercel deploys are triggered by the Git integration, not by this workflow.
 
 ## License
 

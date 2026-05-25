@@ -1,13 +1,13 @@
 # Repository Guidelines
 
-Astro 6 SSR starter with React 19 islands, Tailwind 4, Supabase auth, shadcn/ui, and Cloudflare Workers deployment.
+Astro 6 SSR app (SpendLens) with React 19 islands, Tailwind 4, Supabase auth, shadcn/ui, and Vercel deployment.
 
 ## Hard Rules
 
 - Never add "use client" or Next.js directives — not used in this stack.
 - Do not use React components for non-interactive content — use Astro components instead.
 - Never expose `SUPABASE_URL` or `SUPABASE_KEY` to the client; both are server-only secrets declared in `astro.config.mjs` env schema.
-- Never commit secrets to git; use `.dev.vars` (gitignored) for local Cloudflare dev secrets.
+- Never commit secrets to git; use `.env.local` (gitignored) for local `vercel dev` secrets.
 - API routes must export `const prerender = false`; all other pages are SSR by default (`output: "server"` in `@astro.config.mjs`).
 - Never concatenate Tailwind classes manually — always use `cn()` from `@/lib/utils`.
 - Always enable RLS on new Supabase tables with per-operation, per-role policies.
@@ -23,7 +23,7 @@ Astro 6 SSR starter with React 19 islands, Tailwind 4, Supabase auth, shadcn/ui,
 
 ## Commands
 
-- `npm run dev` — start dev server (Cloudflare workerd runtime)
+- `npm run dev` — start Astro dev server
 - `npm run build` — production build; requires `SUPABASE_URL` + `SUPABASE_KEY` in environment
 - `npm run lint` — ESLint with type-checked rules
 - `npm run lint:fix` — auto-fix lint issues
@@ -31,7 +31,7 @@ Astro 6 SSR starter with React 19 islands, Tailwind 4, Supabase auth, shadcn/ui,
 
 Pre-commit hooks (husky + lint-staged) auto-run `eslint --fix` on `*.{ts,tsx,astro}` and `prettier --write` on `*.{json,css,md}`.
 
-CI gate (`@.github/workflows/ci.yml`): lint then build on every push/PR to `master`; both must pass.
+CI gate (`@.github/workflows/ci.yml`): lint then build on every push/PR to `main`; both must pass. Vercel handles deploys via its Git integration, not via this workflow.
 
 ## Coding Conventions
 
@@ -43,5 +43,5 @@ CI gate (`@.github/workflows/ci.yml`): lint then build on every push/PR to `mast
 
 ## Security & Configuration
 
-- Production secrets: set via Cloudflare dashboard or `npx wrangler secret put`.
+- Production secrets: set via Vercel dashboard or `vercel env add SUPABASE_URL production` / `vercel env add SUPABASE_KEY production`.
 - GitHub CI requires `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets (Settings → Secrets).
