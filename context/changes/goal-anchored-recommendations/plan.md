@@ -350,28 +350,28 @@ No new migrations required — this slice is read-only against the schema establ
 
 #### Automated
 
-- [x] 1.1 TypeScript compilation passes: `npx tsc --noEmit`
-- [x] 1.2 Lint passes: `npm run lint`
+- [x] 1.1 TypeScript compilation passes: `npx tsc --noEmit` — 5f132fa
+- [x] 1.2 Lint passes: `npm run lint` — 5f132fa
 
 #### Manual
 
-- [x] 1.3 `computeRecommendations([], [])` returns correct zero state without throwing
-- [x] 1.4 Suggestion amounts match a hand-worked example; greedy stops when gap is closed
+- [x] 1.3 `computeRecommendations([], [])` returns correct zero state without throwing — 5f132fa
+- [x] 1.4 Suggestion amounts match a hand-worked example; greedy stops when gap is closed — 5f132fa
 
 ### Phase 2: /recommendations SSR Page
 
 #### Automated
 
-- [ ] 2.1 TypeScript compilation passes: `npx tsc --noEmit`
-- [ ] 2.2 Lint passes: `npm run lint`
-- [ ] 2.3 Build passes: `npm run build`
+- [x] 2.1 TypeScript compilation passes: `npx tsc --noEmit`
+- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 Unauthenticated request to `/recommendations` redirects to sign-in
-- [ ] 2.5 No goals + no transactions → "Create a savings goal" CTA shown
-- [ ] 2.6 Transactions present, no goals → "Create a savings goal" CTA shown
-- [ ] 2.7 Goals present, no transactions → "Connect your bank account" CTA shown
+- [x] 2.4 Unauthenticated request to `/recommendations` redirects to sign-in
+- [x] 2.5 No goals + no transactions → "Create a savings goal" CTA shown
+- [x] 2.6 Transactions present, no goals → "Create a savings goal" CTA shown
+- [x] 2.7 Goals present, no transactions → "Connect your bank account" CTA shown
 
 ### Phase 3: RecommendationsPanel React Island
 
