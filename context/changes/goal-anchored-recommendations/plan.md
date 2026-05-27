@@ -362,33 +362,33 @@ No new migrations required — this slice is read-only against the schema establ
 
 #### Automated
 
-- [x] 2.1 TypeScript compilation passes: `npx tsc --noEmit`
-- [x] 2.2 Lint passes: `npm run lint`
-- [x] 2.3 Build passes: `npm run build`
+- [x] 2.1 TypeScript compilation passes: `npx tsc --noEmit` — 480c4ee
+- [x] 2.2 Lint passes: `npm run lint` — 480c4ee
+- [x] 2.3 Build passes: `npm run build` — 480c4ee
 
 #### Manual
 
-- [x] 2.4 Unauthenticated request to `/recommendations` redirects to sign-in
-- [x] 2.5 No goals + no transactions → "Create a savings goal" CTA shown
-- [x] 2.6 Transactions present, no goals → "Create a savings goal" CTA shown
-- [x] 2.7 Goals present, no transactions → "Connect your bank account" CTA shown
+- [x] 2.4 Unauthenticated request to `/recommendations` redirects to sign-in — 480c4ee
+- [x] 2.5 No goals + no transactions → "Create a savings goal" CTA shown — 480c4ee
+- [x] 2.6 Transactions present, no goals → "Create a savings goal" CTA shown — 480c4ee
+- [x] 2.7 Goals present, no transactions → "Connect your bank account" CTA shown — 480c4ee
 
 ### Phase 3: RecommendationsPanel React Island
 
 #### Automated
 
-- [ ] 3.1 TypeScript compilation passes: `npx tsc --noEmit`
-- [ ] 3.2 Lint passes: `npm run lint`
-- [ ] 3.3 Build passes: `npm run build`
+- [x] 3.1 TypeScript compilation passes: `npx tsc --noEmit`
+- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.4 On-track goal shows success card; alerts still appear if any exist
-- [ ] 3.5 Behind-schedule goal shows ranked suggestions with correct currency amounts
-- [ ] 3.6 Expired goal tab shows "Expired" badge; suggestions still render
-- [ ] 3.7 Two active goals: tab switching shows correct per-goal data
-- [ ] 3.8 Category above alert threshold: alert card appears above tabs with correct amounts
-- [ ] 3.9 Page renders within 2 seconds of navigation
+- [x] 3.4 On-track goal shows success card; alerts still appear if any exist
+- [x] 3.5 Behind-schedule goal shows ranked suggestions with correct currency amounts
+- [x] 3.6 Expired goal tab shows "Expired" badge; suggestions still render
+- [x] 3.7 Two active goals: tab switching shows correct per-goal data
+- [x] 3.8 Category above alert threshold: alert card appears above tabs with correct amounts
+- [x] 3.9 Page renders within 2 seconds of navigation
 
 ### Phase 4: Navigation
 
