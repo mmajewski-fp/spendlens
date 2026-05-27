@@ -33,3 +33,41 @@ export interface SavingsGoal {
   /** ISO 8601 timestamp string */
   created_at: string;
 }
+
+export interface Suggestion {
+  categorySlug: string;
+  categoryName: string;
+  /** Cut amount in integer cents, always > 0. */
+  estimatedSavingCents: number;
+}
+
+export interface SpendingAlert {
+  categorySlug: string;
+  categoryName: string;
+  /** Actual category spend in the 30-day window, in integer cents. */
+  spendCents: number;
+  /** 12% of monthly income, in integer cents. */
+  thresholdCents: number;
+}
+
+export interface GoalRecommendation {
+  goalId: string;
+  goalName: string;
+  targetAmountCents: number;
+  /** ISO YYYY-MM-DD */
+  targetDate: string;
+  isExpired: boolean;
+  isOnTrack: boolean;
+  requiredMonthlySavingCents: number;
+  currentSurplusCents: number;
+  /** Max 5 suggestions; empty when isOnTrack. */
+  suggestions: Suggestion[];
+}
+
+export interface RecommendationsResult {
+  hasMissingIncome: boolean;
+  monthlyIncomeCents: number;
+  alerts: SpendingAlert[];
+  /** Same order as getUserGoals() (created_at ASC). */
+  goals: GoalRecommendation[];
+}
