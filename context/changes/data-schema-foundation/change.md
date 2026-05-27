@@ -2,7 +2,7 @@
 id: data-schema-foundation
 title: "Data schema: transactions, savings_goals, categories + RLS"
 roadmap_ref: F-01
-status: implementing
+status: implemented
 created: 2026-05-27
 updated: 2026-05-27
 ---
