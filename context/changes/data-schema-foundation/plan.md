@@ -295,23 +295,23 @@ Monetary amounts are integers (cents) from day one. If this ever needs to change
 
 #### Automated
 
-- [x] 2.1 TypeScript compilation passes: `npx tsc --noEmit`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 TypeScript compilation passes: `npx tsc --noEmit` — e643da3
+- [x] 2.2 Lint passes: `npm run lint` — e643da3
 
 #### Manual
 
-- [x] 2.3 IDE autocomplete resolves all entity fields correctly from an import of `Transaction`
+- [x] 2.3 IDE autocomplete resolves all entity fields correctly from an import of `Transaction` — e643da3
 
 ### Phase 3: Service Helpers
 
 #### Automated
 
-- [ ] 3.1 TypeScript compilation passes: `npx tsc --noEmit`
-- [ ] 3.2 Lint passes: `npm run lint`
-- [ ] 3.3 Build passes: `npm run build`
+- [x] 3.1 TypeScript compilation passes: `npx tsc --noEmit`
+- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.4 `getCategories()` returns 11 seeded categories via test route
-- [ ] 3.5 `getUserTransactions()` returns empty array for user with no transactions
-- [ ] 3.6 4th `createGoal()` call for same user fails with trigger exception message
+- [x] 3.4 `getCategories()` returns 11 seeded categories via test route
+- [x] 3.5 `getUserTransactions()` returns empty array for user with no transactions
+- [x] 3.6 4th `createGoal()` call for same user fails with trigger exception message
