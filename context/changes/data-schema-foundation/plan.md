@@ -295,12 +295,12 @@ Monetary amounts are integers (cents) from day one. If this ever needs to change
 
 #### Automated
 
-- [ ] 2.1 TypeScript compilation passes: `npx tsc --noEmit`
-- [ ] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 TypeScript compilation passes: `npx tsc --noEmit`
+- [x] 2.2 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 IDE autocomplete resolves all entity fields correctly from an import of `Transaction`
+- [x] 2.3 IDE autocomplete resolves all entity fields correctly from an import of `Transaction`
 
 ### Phase 3: Service Helpers
 
