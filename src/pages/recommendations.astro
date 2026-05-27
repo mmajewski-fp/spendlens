@@ -24,6 +24,7 @@ if (supabase) {
       result = computeRecommendations(transactions, goals);
     }
   } catch (err) {
+    console.error("[recommendations] Error fetching data:", err);
     fetchError = err instanceof Error ? err.message : "An unexpected error occurred.";
   }
 } else {
