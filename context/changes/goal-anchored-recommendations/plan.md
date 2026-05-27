@@ -377,25 +377,25 @@ No new migrations required — this slice is read-only against the schema establ
 
 #### Automated
 
-- [x] 3.1 TypeScript compilation passes: `npx tsc --noEmit`
-- [x] 3.2 Lint passes: `npm run lint`
-- [x] 3.3 Build passes: `npm run build`
+- [x] 3.1 TypeScript compilation passes: `npx tsc --noEmit` — af76610
+- [x] 3.2 Lint passes: `npm run lint` — af76610
+- [x] 3.3 Build passes: `npm run build` — af76610
 
 #### Manual
 
-- [x] 3.4 On-track goal shows success card; alerts still appear if any exist
-- [x] 3.5 Behind-schedule goal shows ranked suggestions with correct currency amounts
-- [x] 3.6 Expired goal tab shows "Expired" badge; suggestions still render
-- [x] 3.7 Two active goals: tab switching shows correct per-goal data
-- [x] 3.8 Category above alert threshold: alert card appears above tabs with correct amounts
-- [x] 3.9 Page renders within 2 seconds of navigation
+- [x] 3.4 On-track goal shows success card; alerts still appear if any exist — af76610
+- [x] 3.5 Behind-schedule goal shows ranked suggestions with correct currency amounts — af76610
+- [x] 3.6 Expired goal tab shows "Expired" badge; suggestions still render — af76610
+- [x] 3.7 Two active goals: tab switching shows correct per-goal data — af76610
+- [x] 3.8 Category above alert threshold: alert card appears above tabs with correct amounts — af76610
+- [x] 3.9 Page renders within 2 seconds of navigation — af76610
 
 ### Phase 4: Navigation
 
 #### Automated
 
-- [ ] 4.1 Lint passes: `npm run lint`
-- [ ] 4.2 Build passes: `npm run build`
+- [x] 4.1 Lint passes: `npm run lint`
+- [x] 4.2 Build passes: `npm run build`
 
 #### Manual
 
