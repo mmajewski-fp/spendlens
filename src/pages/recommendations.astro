@@ -13,13 +13,18 @@ let hasGoals = false;
 let hasTransactions = false;
 let result: RecommendationsResult | null = null;
 let configError = false;
+let fetchError: string | null = null;
 
 if (supabase) {
-  const [transactions, goals] = await Promise.all([getUserTransactions(supabase), getUserGoals(supabase)]);
-  hasGoals = goals.length > 0;
-  hasTransactions = transactions.length > 0;
-  if (hasGoals && hasTransactions) {
-    result = computeRecommendations(transactions, goals);
+  try {
+    const [transactions, goals] = await Promise.all([getUserTransactions(supabase), getUserGoals(supabase)]);
+    hasGoals = goals.length > 0;
+    hasTransactions = transactions.length > 0;
+    if (hasGoals && hasTransactions) {
+      result = computeRecommendations(transactions, goals);
+    }
+  } catch (err) {
+    fetchError = err instanceof Error ? err.message : "An unexpected error occurred.";
   }
 } else {
   configError = true;
@@ -42,7 +47,18 @@ if (supabase) {
       }
 
       {
-        !configError && !hasGoals && (
+        fetchError && (
+          <div class="rounded-2xl border border-red-400/30 bg-red-500/10 p-8 text-center text-white backdrop-blur-xl">
+            <p class="mb-1 font-semibold text-red-200">Could not load recommendations</p>
+            <p class="text-sm text-red-300/70">
+              Please try refreshing the page. If the problem persists, contact support.
+            </p>
+          </div>
+        )
+      }
+
+      {
+        !configError && !fetchError && !hasGoals && (
           <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
             <p class="mb-2 text-lg font-semibold">No savings goals yet</p>
             <p class="mb-6 text-sm text-blue-100/70">
@@ -59,7 +75,7 @@ if (supabase) {
       }
 
       {
-        !configError && hasGoals && !hasTransactions && (
+        !configError && !fetchError && hasGoals && !hasTransactions && (
           <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
             <p class="mb-2 text-lg font-semibold">No transactions imported</p>
             <p class="mb-6 text-sm text-blue-100/70">
