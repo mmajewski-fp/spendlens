@@ -394,8 +394,8 @@ No new migrations required — this slice is read-only against the schema establ
 
 #### Automated
 
-- [x] 4.1 Lint passes: `npm run lint`
-- [x] 4.2 Build passes: `npm run build`
+- [x] 4.1 Lint passes: `npm run lint` — 36ed471
+- [x] 4.2 Build passes: `npm run build` — 36ed471
 
 #### Manual
 

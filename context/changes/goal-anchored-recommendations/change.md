@@ -1,7 +1,7 @@
 ---
 id: goal-anchored-recommendations
 title: "Per-goal expense-cutting recommendations + excessive-spending alerts"
-status: implementing
+status: implemented
 created: 2026-05-27
 updated: 2026-05-27
 roadmap_id: S-06
