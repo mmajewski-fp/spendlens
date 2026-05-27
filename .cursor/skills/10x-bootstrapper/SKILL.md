@@ -18,7 +18,7 @@ description: >
 
 This skill is the chain-tail of the bootstrap sequence (`/10x-shape → /10x-prd → /10x-tech-stack-selector → 10x-bootstrapper`). Its single job: turn a written tech-stack hand-off into a scaffolded project in the current working directory, with verification findings logged for the user to review.
 
-The skill is a **registry consumer**, not a registry owner. The starter registry lives in `/10x-tech-stack-selector` (`packages/ai-artifacts/skills/10x-tech-stack-selector/references/starter-registry.yaml`); bootstrapper looks up the chosen card by `starter_id`, substitutes its `cmd_template`, and dispatches to the right cwd strategy. A CI validator (`scripts/validate-starter-registry-sync.mjs`) prevents bootstrapper from referencing a `starter_id` absent from that registry.
+The skill is a **registry consumer**, not a registry owner. The starter registry lives in `/10x-tech-stack-selector` (`/skills/10x-tech-stack-selector/references/starter-registry.yaml`); bootstrapper looks up the chosen card by `starter_id`, substitutes its `cmd_template`, and dispatches to the right cwd strategy. A CI validator (`scripts/validate-starter-registry-sync.mjs`) prevents bootstrapper from referencing a `starter_id` absent from that registry.
 
 v1 is **chain-mode only**. Without `context/foundation/tech-stack.md`, the skill refuses and redirects to `/10x-tech-stack-selector`. There is no inline mini-handoff, no standalone-mode, no AI-as-bridge fallback for unknown stacks. v1 also does **not** generate `AGENTS.md` / `CLAUDE.md` — that responsibility belongs to a future M1L4 skill.
 
@@ -39,7 +39,7 @@ Skip when:
 ## Required inputs
 
 1. `context/foundation/tech-stack.md` — the hand-off written by `/10x-tech-stack-selector`. Contract: see `references/handoff-consumer.md` (which pins to `/10x-tech-stack-selector/references/handoff-schema.md` as the authoritative schema).
-2. The chosen card from `packages/ai-artifacts/skills/10x-tech-stack-selector/references/starter-registry.yaml`. Resolved by `starter_id` lookup. Carries `cmd_template`, `language_family`, `bootstrapper_confidence`, `toolchain.package_manager`, `deployment_defaults`.
+2. The chosen card from `/skills/10x-tech-stack-selector/references/starter-registry.yaml`. Resolved by `starter_id` lookup. Carries `cmd_template`, `language_family`, `bootstrapper_confidence`, `toolchain.package_manager`, `deployment_defaults`.
 3. `references/bootstrapper-config.yaml` — bootstrapper-side per-starter `cwd_strategy` overrides + `language_family → audit_command` lookup. Bundled with the skill.
 4. `references/handoff-consumer.md` — bundled. Loaded at Step 0.
 5. `references/refusal-protocol.md` — bundled. Loaded when any refusal condition trips.
@@ -86,7 +86,7 @@ Bootstrapper requires a tech-stack hand-off at `<handoff-path>`. Run `/10x-tech-
 
 Then STOP. The conversation context is **not** a fallback — even if a stack pick was discussed earlier in chat, the skill demands the file on disk. See `references/refusal-protocol.md` for the full set of refusal conditions and clipboard strings.
 
-**If present**, read it FULLY (no `limit`/`offset`) and proceed. Parse the frontmatter per `references/handoff-consumer.md` and resolve the chosen card by `starter_id` lookup against `packages/ai-artifacts/skills/10x-tech-stack-selector/references/starter-registry.yaml`. If the lookup fails, run the registry-drift refusal from `references/refusal-protocol.md` and STOP.
+**If present**, read it FULLY (no `limit`/`offset`) and proceed. Parse the frontmatter per `references/handoff-consumer.md` and resolve the chosen card by `starter_id` lookup against `/skills/10x-tech-stack-selector/references/starter-registry.yaml`. If the lookup fails, run the registry-drift refusal from `references/refusal-protocol.md` and STOP.
 
 Echo the consumed fields back to the user as a confirm-or-correct summary:
 
@@ -101,6 +101,8 @@ Hand-off received:
   Deployment:     <hints.deployment_target>
   Feature flags:  <comma list of has_* set to true, or "none">
 ```
+
+Ask one confirmation:
 
 Ask the user:
 - question: "Proceed with this hand-off, or correct something first?"
@@ -123,8 +125,8 @@ Before running the starter's CLI, run the light recency check described in `refe
 Sequence:
 
 1. From the chosen card, derive the npm package name from `cmd_template` if `hints.language_family == js` and the template invokes a `create-*` CLI (e.g., `npm create next-app` → `create-next-app`, `npm create astro` → `create-astro`, `npm create vite` → `create-vite`). If the template starts with `git clone`, skip the npm step.
-2. If a package name was derived, run `npm view <package> version` and `npm view <package> time.modified` using a bash command.
-3. From the chosen card, parse `docs_url`. If it points at `github.com/<owner>/<repo>`, run `gh api repos/<owner>/<repo> --jq '.pushed_at'` using a bash command.
+2. If a package name was derived, run `npm view <package> version` and `npm view <package> time.modified`.
+3. From the chosen card, parse `docs_url`. If it points at `github.com/<owner>/<repo>`, run `gh api repos/<owner>/<repo> --jq '.pushed_at'`.
 4. Compute severity per the thresholds in `pre-scaffold-verification.md` (fresh / aged / stale).
 5. Print one summary line in conversation. Prepend a one-line "Heads-up" warning if any signal is stale. Never block — proceed to Step 2 regardless.
 6. Stage the resolved package name (if any), GitHub repo URL (if any), both timestamps, and both severities into the in-memory verification record. Step 4 writes that record to disk.
@@ -141,9 +143,9 @@ Sequence:
 
 1. Resolve the `cmd_template` from the chosen card. Substitute `{name}` and `{pm}` per the strategy in scope (see `scaffold-merge.md` § Substitution rules). The `{pm}` fallback is the card's `toolchain.package_manager` if the hand-off omits the field.
 2. Dispatch on `cwd_strategy` (resolved at Step 1 from `bootstrapper-config.yaml`, defaulting to `subdir-then-move`):
-   - **`subdir-then-move`** — run the resolved command with `{name}=.bootstrap-scaffold` using a bash command. On exit code 0, apply the conflict matrix moving files up into cwd, then delete `.bootstrap-scaffold/`.
-   - **`native-cwd`** — run the resolved command with `{name}=.` directly in cwd using a bash command. No merge step. Pre-flight: list the files the CLI is about to touch, surface them in conversation before exec.
-   - **`git-clone`** — run the resolved command with `{name}=.bootstrap-scaffold` using a bash command. On exit code 0, delete `.bootstrap-scaffold/.git/` before applying the conflict matrix and moving files up. Then delete `.bootstrap-scaffold/`.
+   - **`subdir-then-move`** — run the resolved command with `{name}=.bootstrap-scaffold`. On exit code 0, apply the conflict matrix moving files up into cwd, then delete `.bootstrap-scaffold/`.
+   - **`native-cwd`** — run the resolved command with `{name}=.` directly in cwd. No merge step. Pre-flight: list the files the CLI is about to touch, surface them in conversation before exec.
+   - **`git-clone`** — run the resolved command with `{name}=.bootstrap-scaffold`. On exit code 0, delete `.bootstrap-scaffold/.git/` before applying the conflict matrix and moving files up. Then delete `.bootstrap-scaffold/`.
 3. Capture stdout, stderr, and the exit code into the in-memory verification record regardless of outcome.
 4. **CLI failure is HARD-STOP.** If the exit code is non-zero, run the CLI failure handling path in `scaffold-merge.md` § CLI failure handling: leave `.bootstrap-scaffold/` in place, do not apply the conflict matrix, write a partial `verification.md` with `phase_3_status: failed`, set the clipboard to `/10x-bootstrapper`, print the failure summary, and STOP. Do not advance to Step 3.
 5. On exit code 0, print one summary line per the format in `scaffold-merge.md` § Surfacing the result. Stage the file-by-file move log into the in-memory verification record. Proceed to Step 3.
@@ -159,7 +161,7 @@ Read `references/post-scaffold-verification.md` now. The slot dispatches to the 
 Sequence:
 
 1. If the resolved audit command is `null`, skip the audit and stage a structured "no built-in audit tool for <language_family>" note in the verification record. Print the skip line per the reference's Output format. Proceed to Step 4.
-2. Otherwise, run the resolved command from cwd (or the appropriate dependency-install directory if the scaffold structured the project that way) using a bash command. Capture stdout, stderr, and exit code. The audit tool's exit code is informational only — bootstrapper does NOT halt on a non-zero audit exit.
+2. Otherwise, run the resolved command from cwd (or the appropriate dependency-install directory if the scaffold structured the project that way). Capture stdout, stderr, and exit code. The audit tool's exit code is informational only — bootstrapper does NOT halt on a non-zero audit exit.
 3. Parse the output per the reference's per-ecosystem invocation block. Tier findings into CRITICAL / HIGH / MODERATE / LOW.
 4. If the tool supports a direct-vs-transitive distinction, compute that breakdown.
 5. Print one summary line in conversation per the reference's Output format. CRITICAL and HIGH counts surface inline; MODERATE and LOW are log-only.
@@ -204,7 +206,7 @@ What the skill produces externally:
 
 What the skill does NOT produce in v1:
 
-- **`AGENTS.md` / the project's AI configuration file (AGENTS.md)** — deferred to the future M1L4 skill ("Memory Architecture").
+- **`AGENTS.md` / `CLAUDE.md`** — deferred to the future M1L4 ("Memory Architecture") skill.
 - **CI workflow files** (`.github/workflows/ci.yml`, etc.) — deferred to the same future skill.
 - **`git init`** or any git history — bootstrapper assumes the user manages their own repo. The `git-clone` strategy explicitly deletes the cloned `.git/` before move-up so the upstream starter's history does not leak.
 - **Auto-fix / auto-patch on audit findings** — bootstrapper informs; the user decides.
@@ -229,6 +231,6 @@ What the skill does NOT produce in v1:
 
 4. **CLI failure is HARD-STOP.** Non-zero exit code at Step 2 halts the skill, leaves `.bootstrap-scaffold/` in place for inspection, and writes a partial verification log. All other phases use WARN-AND-CONTINUE — verification findings are educational, not gating.
 
-5. **v1 does not generate `AGENTS.md` / the project's AI configuration file (AGENTS.md).** That work moves to a future M1L4 skill ("Memory Architecture"). v1 surfaces hint values like `bootstrapper_confidence: best-effort` and `quality_override: true` in the conversation summary but takes no compensating action.
+5. **v1 does not generate `AGENTS.md` / `CLAUDE.md`.** That work moves to a future M1L4 skill ("Memory Architecture"). v1 surfaces hint values like `bootstrapper_confidence: best-effort` and `quality_override: true` in the conversation summary but takes no compensating action.
 
 6. **Skill-internal labels stay internal.** When speaking to the user, never reference Step numbers (`Step 0`, `Step 2`), strategy names verbatim (`subdir-then-move`, `native-cwd`, `git-clone`) without context, or internal field paths (`hints.deployment_target`). Translate to plain language: "the scaffold step", "your deployment target", "how the CLI scaffolds in your current directory", "by cloning a starter repo".

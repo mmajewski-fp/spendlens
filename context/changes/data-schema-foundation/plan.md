@@ -280,16 +280,16 @@ Monetary amounts are integers (cents) from day one. If this ever needs to change
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npx supabase db reset` completes without error
-- [x] 1.2 No pending schema changes: `npx supabase db diff` shows empty diff after reset
-- [x] 1.3 Lint passes: `npm run lint`
+- [x] 1.1 Migration applies cleanly: `npx supabase db reset` completes without error — 077ddaf
+- [x] 1.2 No pending schema changes: `npx supabase db diff` shows empty diff after reset — 077ddaf
+- [x] 1.3 Lint passes: `npm run lint` — 077ddaf
 
 #### Manual
 
-- [x] 1.4 All three tables visible in Supabase Studio Table Editor
-- [x] 1.5 RLS enabled on all three tables (Studio → Authentication → Policies)
-- [x] 1.6 11 seeded categories visible in the categories table
-- [x] 1.7 RLS blocks unauthenticated inserts on transactions and savings_goals; categories readable without auth
+- [x] 1.4 All three tables visible in Supabase Studio Table Editor — 077ddaf
+- [x] 1.5 RLS enabled on all three tables (Studio → Authentication → Policies) — 077ddaf
+- [x] 1.6 11 seeded categories visible in the categories table — 077ddaf
+- [x] 1.7 RLS blocks unauthenticated inserts on transactions and savings_goals; categories readable without auth — 077ddaf
 
 ### Phase 2: TypeScript Entity Types
 

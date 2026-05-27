@@ -2,8 +2,8 @@
   "package": "@przeprogramowani/10x-cli",
   "version": "1.6.1",
   "manifestVersion": 2,
-  "lastApplied": "2026-05-19T18:24:47.885Z",
-  "lessonId": "m1l5",
+  "lastApplied": "2026-05-27T06:54:45.678Z",
+  "lessonId": "m2l2",
   "course": "10xdevs3",
   "tool": "cursor",
   "files": {
@@ -77,6 +77,37 @@
       "10x-infra-research": {
         "files": [
           "references/agent-friendly-criteria.md",
+          "SKILL.md"
+        ]
+      },
+      "10x-roadmap": {
+        "files": [
+          "SKILL.md"
+        ]
+      },
+      "10x-new": {
+        "files": [
+          "SKILL.md"
+        ]
+      },
+      "10x-plan": {
+        "files": [
+          "references/progress-format.md",
+          "SKILL.md"
+        ]
+      },
+      "10x-plan-review": {
+        "files": [
+          "SKILL.md"
+        ]
+      },
+      "10x-implement": {
+        "files": [
+          "SKILL.md"
+        ]
+      },
+      "10x-archive": {
+        "files": [
           "SKILL.md"
         ]
       }
