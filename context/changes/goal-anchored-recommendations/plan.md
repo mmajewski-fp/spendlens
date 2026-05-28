@@ -187,7 +187,7 @@ Create the Astro page that fetches data server-side, runs the engine, handles al
 **Contract**:
 - Empty-state priority: check `goals.length === 0` first (CTA: "Create a savings goal"), then `transactions.length === 0` (CTA: "Connect your bank account"), then proceed to render the panel
 - The Supabase client is obtained via `Astro.locals` (already resolved by middleware) — do not create a new client in the page
-- Pass `result` (typed `RecommendationsResult`) and `goals` as props to `<RecommendationsPanel client:load />`; use `client:load` so the tab switcher is interactive on first paint
+- Pass `result` (typed `RecommendationsResult`) as the sole prop to `<RecommendationsPanel client:load />`; use `client:load` so the tab switcher is interactive on first paint. (Goal metadata is carried inside `result.goals` — no separate `goals` prop needed; see Phase 3 Props interface for the authoritative contract.)
 
 ### Success Criteria:
 
@@ -205,6 +205,8 @@ Create the Astro page that fetches data server-side, runs the engine, handles al
 - Sign in with goals but no transactions — confirm "Connect your bank account" CTA
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here for manual confirmation from the human that the empty states and route protection work correctly before building the recommendations UI.
+
+**Post-implementation addendum** (commits f5a8d7b, a5eba17): Wrapped all service-helper calls in a try/catch per the project's lessons.md rule ("Wrap all service-helper calls in Astro SSR frontmatter in a try/catch so transient Supabase errors render a graceful error card instead of a blank 500 page"). Added `configError` and `fetchError` state variables and corresponding error-card render branches. A transient `console.error()` was also added (a5eba17) and subsequently removed during impl-review (2026-05-28).
 
 ---
 
