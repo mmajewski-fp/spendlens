@@ -1,6 +1,4 @@
-import type { SavingsGoal } from "@/types";
-import type { GoalRecommendation, RecommendationsResult, SpendingAlert, Suggestion } from "@/types";
-import type { TransactionWithCategory } from "./transactions";
+import type { SavingsGoal, GoalRecommendation, RecommendationsResult, SpendingAlert, Suggestion, TransactionWithCategory } from "@/types";
 
 const WINDOW_DAYS = 30;
 const ALERT_INCOME_FRACTION = 0.12;
@@ -88,7 +86,7 @@ export function computeRecommendations(
     const months = monthsRemaining(today, targetDate);
     const requiredMonthlySavingCents = Math.ceil(goal.target_amount / months);
     const gapCents = Math.max(0, requiredMonthlySavingCents - monthlySurplusCents);
-    const isOnTrack = gapCents === 0;
+    const isOnTrack = !hasMissingIncome && gapCents === 0;
 
     const suggestions: Suggestion[] = [];
     if (!isOnTrack && !hasMissingIncome) {

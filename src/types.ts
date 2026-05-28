@@ -22,6 +22,10 @@ export interface Transaction {
   created_at: string;
 }
 
+export type TransactionWithCategory = Transaction & {
+  category: Pick<Category, "name" | "slug"> | null;
+};
+
 export interface SavingsGoal {
   id: string;
   user_id: string;

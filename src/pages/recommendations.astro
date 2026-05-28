@@ -17,14 +17,14 @@ let fetchError: string | null = null;
 
 if (supabase) {
   try {
-    const [transactions, goals] = await Promise.all([getUserTransactions(supabase), getUserGoals(supabase)]);
+    const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const [transactions, goals] = await Promise.all([getUserTransactions(supabase, since), getUserGoals(supabase)]);
     hasGoals = goals.length > 0;
     hasTransactions = transactions.length > 0;
     if (hasGoals && hasTransactions) {
       result = computeRecommendations(transactions, goals);
     }
   } catch (err) {
-    console.error("[recommendations] Error fetching data:", err);
     fetchError = err instanceof Error ? err.message : "An unexpected error occurred.";
   }
 } else {

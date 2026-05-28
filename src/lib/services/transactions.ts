@@ -1,16 +1,20 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Category, Transaction } from "@/types";
+import type { TransactionWithCategory, Transaction } from "@/types";
 
-export type TransactionWithCategory = Transaction & {
-  category: Pick<Category, "name" | "slug"> | null;
-};
+export type { TransactionWithCategory };
 
-export async function getUserTransactions(client: SupabaseClient): Promise<TransactionWithCategory[]> {
-  const { data, error } = await client
+export async function getUserTransactions(
+  client: SupabaseClient,
+  since?: string,
+): Promise<TransactionWithCategory[]> {
+  let query = client
     .from("transactions")
     .select("*, category:categories(name, slug)")
     .order("date", { ascending: false });
 
+  if (since) query = query.gte("date", since);
+
+  const { data, error } = await query;
   if (error) throw new Error(error.message);
   return data as TransactionWithCategory[];
 }
