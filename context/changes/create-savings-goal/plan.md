@@ -330,32 +330,32 @@ from `data-schema-foundation`.
 
 #### Automated
 
-- [x] 1.1 Lint passes
-- [x] 1.2 Build passes
+- [x] 1.1 Lint passes — 935eb07
+- [x] 1.2 Build passes — 935eb07
 
 #### Manual
 
-- [x] 1.3 Valid POST returns 201 with goal object
-- [x] 1.4 POST without auth returns 401 JSON
-- [x] 1.5 POST with invalid fields returns 400 JSON
-- [x] 1.6 POST when 3 goals exist returns 409 JSON with cap message
-- [x] 1.7 POST with past target_date returns 400 JSON
+- [x] 1.3 Valid POST returns 201 with goal object — 935eb07
+- [x] 1.4 POST without auth returns 401 JSON — 935eb07
+- [x] 1.5 POST with invalid fields returns 400 JSON — 935eb07
+- [x] 1.6 POST when 3 goals exist returns 409 JSON with cap message — 935eb07
+- [x] 1.7 POST with past target_date returns 400 JSON — 935eb07
 
 ### Phase 2: /goals Astro Page + GoalsManager React Component
 
 #### Automated
 
-- [ ] 2.1 Lint passes
-- [ ] 2.2 Build passes
+- [x] 2.1 Lint passes
+- [x] 2.2 Build passes
 
 #### Manual
 
-- [ ] 2.3 /goals while signed out redirects to sign-in
-- [ ] 2.4 /goals while signed in renders goals page
-- [ ] 2.5 Form submits and new goal appears inline without page reload
-- [ ] 2.6 At 3 goals, submit button disabled and cap message shown
-- [ ] 2.7 Refresh after creating a goal shows the goal (SSR re-fetch)
-- [ ] 2.8 Recommendations "Create a savings goal" link navigates to /goals
+- [x] 2.3 /goals while signed out redirects to sign-in
+- [x] 2.4 /goals while signed in renders goals page
+- [x] 2.5 Form submits and new goal appears inline without page reload
+- [x] 2.6 At 3 goals, submit button disabled and cap message shown
+- [x] 2.7 Refresh after creating a goal shows the goal (SSR re-fetch)
+- [x] 2.8 Recommendations "Create a savings goal" link navigates to /goals
 
 ### Phase 3: Topbar Navigation Link
 

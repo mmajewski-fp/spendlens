@@ -1,4 +1,11 @@
-import type { SavingsGoal, GoalRecommendation, RecommendationsResult, SpendingAlert, Suggestion, TransactionWithCategory } from "@/types";
+import type {
+  SavingsGoal,
+  GoalRecommendation,
+  RecommendationsResult,
+  SpendingAlert,
+  Suggestion,
+  TransactionWithCategory,
+} from "@/types";
 
 const WINDOW_DAYS = 30;
 const ALERT_INCOME_FRACTION = 0.12;

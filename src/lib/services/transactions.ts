@@ -3,10 +3,7 @@ import type { TransactionWithCategory, Transaction } from "@/types";
 
 export type { TransactionWithCategory };
 
-export async function getUserTransactions(
-  client: SupabaseClient,
-  since?: string,
-): Promise<TransactionWithCategory[]> {
+export async function getUserTransactions(client: SupabaseClient, since?: string): Promise<TransactionWithCategory[]> {
   let query = client
     .from("transactions")
     .select("*, category:categories(name, slug)")

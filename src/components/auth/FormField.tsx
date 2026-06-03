@@ -17,6 +17,10 @@ interface FormFieldProps {
   hint?: ReactNode;
   icon: ReactNode;
   endContent?: ReactNode;
+  disabled?: boolean;
+  maxLength?: number;
+  step?: string;
+  min?: string;
 }
 
 export function FormField({
@@ -31,6 +35,10 @@ export function FormField({
   hint,
   icon,
   endContent,
+  disabled = false,
+  maxLength,
+  step,
+  min,
 }: FormFieldProps) {
   return (
     <div>
@@ -48,9 +56,14 @@ export function FormField({
             onChange(e.target.value);
           }}
           placeholder={placeholder}
+          disabled={disabled}
+          maxLength={maxLength}
+          step={step}
+          min={min}
           className={cn(
             inputBase,
             error ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
+            disabled && "cursor-not-allowed opacity-50",
           )}
         />
         {endContent}
