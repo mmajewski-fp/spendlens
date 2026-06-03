@@ -24,10 +24,13 @@ function getTomorrowDateString(): string {
 
 function getMonthsRemainingLabel(targetDate: string): string {
   const target = new Date(`${targetDate}T00:00:00`);
-  const now = new Date();
-  const months = Math.max(0, (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth()));
-  if (months === 0) return "Past due";
-  return `${months} month${months === 1 ? "" : "s"} remaining`;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (target.getTime() <= today.getTime()) return "Past due";
+  let months = (target.getFullYear() - today.getFullYear()) * 12 + (target.getMonth() - today.getMonth());
+  if (target.getDate() < today.getDate()) months -= 1;
+  const labelMonths = Math.max(1, months);
+  return `${labelMonths} month${labelMonths === 1 ? "" : "s"} remaining`;
 }
 
 export default function GoalsManager({ initialGoals }: Props) {

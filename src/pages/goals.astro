@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import Topbar from "@/components/Topbar.astro";
 import GoalsManager from "@/components/goals/GoalsManager";
 import { createClient } from "@/lib/supabase";
 import { getUserGoals } from "@/lib/services/savings-goals";
@@ -25,6 +26,7 @@ if (supabase) {
 <Layout title="Goals — SpendLens">
   <div class="bg-cosmic flex min-h-screen flex-col items-center p-4 pt-12">
     <div class="w-full max-w-3xl">
+      <Topbar />
       <h1 class="mb-8 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
         Savings Goals
       </h1>

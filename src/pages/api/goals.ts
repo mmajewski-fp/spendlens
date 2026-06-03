@@ -56,7 +56,7 @@ export const POST: APIRoute = async (context) => {
   const targetAmountInCents = Math.round(parsed.data.target_amount_dollars * 100);
 
   try {
-    const goal: SavingsGoal = await createGoal(supabase, {
+    const goal: SavingsGoal = await createGoal(supabase, context.locals.user.id, {
       name: parsed.data.name,
       target_amount: targetAmountInCents,
       target_date: parsed.data.target_date,

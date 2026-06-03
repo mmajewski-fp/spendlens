@@ -1,7 +1,7 @@
 ---
 change_id: create-savings-goal
 title: Create up to 3 active savings goals (target amount + timeframe)
-status: implemented
+status: impl_reviewed
 created: 2026-06-02
 updated: 2026-06-03
 archived_at: null

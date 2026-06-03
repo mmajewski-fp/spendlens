@@ -15,9 +15,14 @@ interface InsertResult {
 
 export async function createGoal(
   client: SupabaseClient,
+  userId: string,
   goalData: Omit<SavingsGoal, "id" | "user_id" | "created_at">,
 ): Promise<SavingsGoal> {
-  const result = (await client.from("savings_goals").insert(goalData).select().single()) as InsertResult;
+  const result = (await client
+    .from("savings_goals")
+    .insert({ ...goalData, user_id: userId })
+    .select()
+    .single()) as InsertResult;
 
   if (result.error) throw new Error(result.error.message);
   if (!result.data) throw new Error("Failed to create savings goal");
