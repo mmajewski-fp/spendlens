@@ -345,27 +345,27 @@ from `data-schema-foundation`.
 
 #### Automated
 
-- [x] 2.1 Lint passes
-- [x] 2.2 Build passes
+- [x] 2.1 Lint passes — b7a57b7
+- [x] 2.2 Build passes — b7a57b7
 
 #### Manual
 
-- [x] 2.3 /goals while signed out redirects to sign-in
-- [x] 2.4 /goals while signed in renders goals page
-- [x] 2.5 Form submits and new goal appears inline without page reload
-- [x] 2.6 At 3 goals, submit button disabled and cap message shown
-- [x] 2.7 Refresh after creating a goal shows the goal (SSR re-fetch)
-- [x] 2.8 Recommendations "Create a savings goal" link navigates to /goals
+- [x] 2.3 /goals while signed out redirects to sign-in — b7a57b7
+- [x] 2.4 /goals while signed in renders goals page — b7a57b7
+- [x] 2.5 Form submits and new goal appears inline without page reload — b7a57b7
+- [x] 2.6 At 3 goals, submit button disabled and cap message shown — b7a57b7
+- [x] 2.7 Refresh after creating a goal shows the goal (SSR re-fetch) — b7a57b7
+- [x] 2.8 Recommendations "Create a savings goal" link navigates to /goals — b7a57b7
 
 ### Phase 3: Topbar Navigation Link
 
 #### Automated
 
-- [ ] 3.1 Lint passes
-- [ ] 3.2 Build passes
+- [x] 3.1 Lint passes
+- [x] 3.2 Build passes
 
 #### Manual
 
-- [ ] 3.3 Goals link appears in Topbar for signed-in users
-- [ ] 3.4 Goals link absent for signed-out users
-- [ ] 3.5 Clicking Goals link navigates to /goals
+- [x] 3.3 Goals link appears in Topbar for signed-in users
+- [x] 3.4 Goals link absent for signed-out users
+- [x] 3.5 Clicking Goals link navigates to /goals
