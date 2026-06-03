@@ -361,11 +361,11 @@ from `data-schema-foundation`.
 
 #### Automated
 
-- [x] 3.1 Lint passes
-- [x] 3.2 Build passes
+- [x] 3.1 Lint passes — 97f9c74
+- [x] 3.2 Build passes — 97f9c74
 
 #### Manual
 
-- [x] 3.3 Goals link appears in Topbar for signed-in users
-- [x] 3.4 Goals link absent for signed-out users
-- [x] 3.5 Clicking Goals link navigates to /goals
+- [x] 3.3 Goals link appears in Topbar for signed-in users — 97f9c74
+- [x] 3.4 Goals link absent for signed-out users — 97f9c74
+- [x] 3.5 Clicking Goals link navigates to /goals — 97f9c74
