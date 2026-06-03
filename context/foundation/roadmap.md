@@ -3,7 +3,7 @@ project: SpendLens
 version: 1
 status: draft
 created: 2026-05-25
-updated: 2026-05-25
+updated: 2026-06-03
 prd_version: 1
 main_goal: market-feedback
 top_blocker: capacity
@@ -31,7 +31,7 @@ SpendLens helps a goal-saver — someone who has set a concrete savings target (
 |---|---|---|---|---|---|
 | F-01 | data-schema-foundation | (foundation) transactions, savings_goals, categories tables and RLS policies are live in Supabase | — | NFR (data isolation), FR-003, FR-006, FR-007 | ready |
 | S-01 | connect-simulated-bank | connect to the simulated banking API and have categorized transactions land in their account | F-01 | FR-003 | blocked |
-| S-04 | create-savings-goal | create up to 3 active savings goals (target amount + timeframe) | F-01 | FR-006, FR-007 | proposed |
+| S-04 | create-savings-goal | create up to 3 active savings goals (target amount + timeframe) | F-01 | FR-006, FR-007 | done |
 | S-06 | goal-anchored-recommendations | view ranked expense-cutting suggestions per active goal alongside excessive-spending alerts | S-01, S-04 | US-01, FR-009, FR-010 | blocked |
 | S-02 | categorized-dashboard | view a spending summary dashboard with expenses grouped by category | S-01 | FR-004 | proposed |
 | S-03 | transactions-list | view a full transactions list of all imported expenses and incomes | S-01 | FR-005 | proposed |
@@ -100,7 +100,7 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** The 3-goal cap is a user-visible rule (FR-007); enforce it at both API and UI layers to avoid a race-condition window where a fourth goal sneaks in.
-- **Status:** proposed
+- **Status:** done
 
 ### S-06: Per-goal expense-cutting recommendations + excessive-spending alerts
 
@@ -195,4 +195,4 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 
 ## Done
 
-(Empty on first generation. `/10x-archive` appends an entry here — and flips that item's `Status` to `done` — when a change whose Change ID matches an item is archived. Do NOT pre-populate.)
+- **S-04: A signed-in user creates a savings goal by entering a target amount and a timeframe; the goal is persisted under their account; the user is prevented from creating a fourth active goal.** — Archived 2026-06-03 → `context/archive/2026-06-02-create-savings-goal/`. Lesson: —.
