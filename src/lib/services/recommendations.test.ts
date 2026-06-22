@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 import { computeRecommendations } from "@/lib/services/recommendations";
-import type { SavingsGoal, TransactionWithCategory } from "@/types";
+import type { RecommendationsResult, SavingsGoal, TransactionWithCategory } from "@/types";
 
 // --- fixture factories -------------------------------------------------------
 // Dates default inside the engine's 30-day window relative to the frozen clock
@@ -47,6 +47,24 @@ function makeGoal(targetAmountCents: number, targetDate: string, name = "Goal"):
     target_date: targetDate,
     created_at: "2026-01-01T00:00:00Z",
   };
+}
+
+// Risk #2 oracle: no numeric field may be NaN or ±Infinity (those render to the
+// UI as "$NaN"/"$∞" via formatCents). Number.isFinite is false for both.
+function expectAllFieldsFinite(result: RecommendationsResult): void {
+  expect(Number.isFinite(result.monthlyIncomeCents)).toBe(true);
+  for (const goal of result.goals) {
+    expect(Number.isFinite(goal.targetAmountCents)).toBe(true);
+    expect(Number.isFinite(goal.requiredMonthlySavingCents)).toBe(true);
+    expect(Number.isFinite(goal.currentSurplusCents)).toBe(true);
+    for (const s of goal.suggestions) {
+      expect(Number.isFinite(s.estimatedSavingCents)).toBe(true);
+    }
+  }
+  for (const a of result.alerts) {
+    expect(Number.isFinite(a.spendCents)).toBe(true);
+    expect(Number.isFinite(a.thresholdCents)).toBe(true);
+  }
 }
 
 describe("computeRecommendations", () => {
@@ -125,5 +143,66 @@ describe("computeRecommendations", () => {
       expect(goal.isOnTrack).toBe(true);
       expect(goal.suggestions).toEqual([]);
     });
+  });
+
+  describe("Risk #2: degenerate-input guards", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-06-01T00:00:00Z"));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("stays finite when the goal timeframe is zero (target date is today)", () => {
+      const transactions = [income(400_000), expense("dining", "Dining", 80_000)];
+      const goals = [makeGoal(1_500_000, "2026-06-01", "Due today")];
+
+      const result = computeRecommendations(transactions, goals);
+
+      // months floored to 1 → required is finite, not NaN/Infinity.
+      expectAllFieldsFinite(result);
+      expect(result.goals[0].isExpired).toBe(false); // strictly-past test, today is not expired
+    });
+
+    it("stays finite when the goal date is in the past", () => {
+      const transactions = [income(400_000), expense("dining", "Dining", 80_000)];
+      const goals = [makeGoal(1_500_000, "2026-05-15", "Already overdue")];
+
+      const result = computeRecommendations(transactions, goals);
+
+      expectAllFieldsFinite(result);
+      expect(result.goals[0].isExpired).toBe(true);
+    });
+
+    it("stays finite when the surplus is negative (expenses exceed income)", () => {
+      const transactions = [income(100_000), expense("dining", "Dining", 150_000)];
+      const goals = [makeGoal(1_500_000, "2026-10-29", "Underwater")];
+
+      const result = computeRecommendations(transactions, goals);
+
+      expectAllFieldsFinite(result);
+      expect(result.hasMissingIncome).toBe(false);
+      expect(result.goals[0].currentSurplusCents).toBe(-50_000); // negative but finite
+    });
+
+    it("returns the empty sentinel when income is missing", () => {
+      const transactions = [expense("dining", "Dining", 80_000)];
+      const goals = [makeGoal(1_500_000, "2026-10-29", "No income")];
+
+      const result = computeRecommendations(transactions, goals);
+
+      expectAllFieldsFinite(result);
+      expect(result.hasMissingIncome).toBe(true);
+      expect(result.alerts).toEqual([]);
+      expect(result.goals[0].suggestions).toEqual([]);
+    });
+
+    // Out-of-contract NaN vector: a malformed target_date string is parsed by
+    // toDateOnly without a validity check, cascading to NaN through to the UI.
+    // Not reachable from the DB/API today; fixing + asserting it belongs to
+    // rollout Phase 2 (Wedge-math contract). See research.md Open Q2.
+    it.todo("malformed target_date string must not yield NaN — add guard + assertion in rollout Phase 2");
   });
 });

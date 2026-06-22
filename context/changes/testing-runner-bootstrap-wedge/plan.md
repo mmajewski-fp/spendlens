@@ -390,8 +390,8 @@ schema, no data, no production-code changes. Rollback = revert the commit.
 
 #### Automated
 
-- [x] 2.1 Risk #1 tests pass: `npm run test`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Risk #1 tests pass: `npm run test` — 5846c44
+- [x] 2.2 Lint passes: `npm run lint` — 5846c44
 
 #### Manual
 
@@ -402,9 +402,9 @@ schema, no data, no production-code changes. Rollback = revert the commit.
 
 #### Automated
 
-- [ ] 3.1 All Risk #2 cases pass: `npm run test`
-- [ ] 3.2 The malformed-date `it.todo` shows as a pending todo in Vitest output
-- [ ] 3.3 Lint passes: `npm run lint`
+- [x] 3.1 All Risk #2 cases pass: `npm run test`
+- [x] 3.2 The malformed-date `it.todo` shows as a pending todo in Vitest output
+- [x] 3.3 Lint passes: `npm run lint`
 
 #### Manual
 
