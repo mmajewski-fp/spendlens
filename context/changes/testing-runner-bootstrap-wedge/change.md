@@ -1,7 +1,7 @@
 ---
 change_id: testing-runner-bootstrap-wedge
 title: Bootstrap test runner and first wedge tests for cut-suggestion math
-status: implementing
+status: implemented
 created: 2026-06-22
 updated: 2026-06-22
 archived_at: null
