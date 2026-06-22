@@ -375,11 +375,11 @@ schema, no data, no production-code changes. Rollback = revert the commit.
 
 #### Automated
 
-- [x] 1.1 Dependencies install cleanly: `npm install`
-- [x] 1.2 Test suite runs green: `npm run test`
-- [x] 1.3 Lint passes on the new config + test file: `npm run lint`
-- [x] 1.4 Build is unaffected: `npm run build`
-- [x] 1.5 CI workflow contains a `npm run test` step between lint and build
+- [x] 1.1 Dependencies install cleanly: `npm install` — 17ec489
+- [x] 1.2 Test suite runs green: `npm run test` — 17ec489
+- [x] 1.3 Lint passes on the new config + test file: `npm run lint` — 17ec489
+- [x] 1.4 Build is unaffected: `npm run build` — 17ec489
+- [x] 1.5 CI workflow contains a `npm run test` step between lint and build — 17ec489
 
 #### Manual
 
@@ -390,8 +390,8 @@ schema, no data, no production-code changes. Rollback = revert the commit.
 
 #### Automated
 
-- [ ] 2.1 Risk #1 tests pass: `npm run test`
-- [ ] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Risk #1 tests pass: `npm run test`
+- [x] 2.2 Lint passes: `npm run lint`
 
 #### Manual
 
