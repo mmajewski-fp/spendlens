@@ -1,10 +1,10 @@
 ---
 change_id: testing-runner-bootstrap-wedge
 title: Bootstrap test runner and first wedge tests for cut-suggestion math
-status: impl_reviewed
+status: archived
 created: 2026-06-22
 updated: 2026-06-23
-archived_at: null
+archived_at: 2026-06-23T06:44:54Z
 ---
 
 ## Notes
