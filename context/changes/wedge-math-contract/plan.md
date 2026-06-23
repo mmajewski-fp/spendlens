@@ -408,8 +408,8 @@ commit(s).
 
 #### Automated
 
-- [x] 3.1 Ranking / minimum-set / 5-cap tests pass: `npm run test`
-- [x] 3.2 Lint passes: `npm run lint`
+- [x] 3.1 Ranking / minimum-set / 5-cap tests pass: `npm run test` — c9f669a
+- [x] 3.2 Lint passes: `npm run lint` — c9f669a
 
 #### Manual
 
@@ -419,9 +419,9 @@ commit(s).
 
 #### Automated
 
-- [ ] 4.1 Tie-break test RED before the comparator change, GREEN after: `npm run test`
-- [ ] 4.2 Full suite green incl. Phase-1 canonical (distinct totals unaffected): `npm run test`
-- [ ] 4.3 Lint passes: `npm run lint`
+- [x] 4.1 Tie-break test RED before the comparator change, GREEN after: `npm run test`
+- [x] 4.2 Full suite green incl. Phase-1 canonical (distinct totals unaffected): `npm run test`
+- [x] 4.3 Lint passes: `npm run lint`
 
 #### Manual
 

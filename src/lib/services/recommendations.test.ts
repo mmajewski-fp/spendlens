@@ -370,5 +370,22 @@ describe("computeRecommendations", () => {
       const total = goal.suggestions.reduce((sum, s) => sum + s.estimatedSavingCents, 0);
       expect(total).toBeLessThan(goal.requiredMonthlySavingCents - goal.currentSurplusCents);
     });
+
+    it("breaks ties alphabetically by category name, not by transaction order", () => {
+      // Two equal-total categories inserted in REVERSE-alphabetical transaction
+      // order (Dining before Apparel): insertion order would yield [dining,
+      // apparel]; the defined tie-break must instead yield [apparel, dining].
+      const transactions = [
+        income(1_000_000),
+        expense("dining", "Dining", 50_000),
+        expense("apparel", "Apparel", 50_000),
+      ];
+      // surplus 900000; target 1000000 over 1 month → gap 100000 = both cuts.
+      const goals = [makeGoal(1_000_000, "2026-07-01", "Tie")];
+
+      const result = computeRecommendations(transactions, goals);
+
+      expect(result.goals[0].suggestions.map((s) => s.categorySlug)).toEqual(["apparel", "dining"]);
+    });
   });
 });

@@ -85,7 +85,9 @@ export function computeRecommendations(
   }
 
   // Per-goal recommendations
-  const sortedBuckets = [...buckets.values()].sort((a, b) => b.totalCents - a.totalCents);
+  const sortedBuckets = [...buckets.values()].sort(
+    (a, b) => b.totalCents - a.totalCents || a.name.localeCompare(b.name) || a.slug.localeCompare(b.slug),
+  );
 
   const goalRecommendations: GoalRecommendation[] = goals.map((goal) => {
     const targetDate = toDateOnly(goal.target_date);
