@@ -419,9 +419,9 @@ commit(s).
 
 #### Automated
 
-- [x] 4.1 Tie-break test RED before the comparator change, GREEN after: `npm run test`
-- [x] 4.2 Full suite green incl. Phase-1 canonical (distinct totals unaffected): `npm run test`
-- [x] 4.3 Lint passes: `npm run lint`
+- [x] 4.1 Tie-break test RED before the comparator change, GREEN after: `npm run test` — bc87bf6
+- [x] 4.2 Full suite green incl. Phase-1 canonical (distinct totals unaffected): `npm run test` — bc87bf6
+- [x] 4.3 Lint passes: `npm run lint` — bc87bf6
 
 #### Manual
 
@@ -432,10 +432,10 @@ commit(s).
 
 #### Automated
 
-- [ ] 5.1 Stryker dev deps install cleanly: `npm install`
-- [ ] 5.2 Stryker runs and produces a report: `npx stryker run --mutate "src/lib/services/recommendations.ts"`
-- [ ] 5.3 Full unit suite still green: `npm run test`
-- [ ] 5.4 Lint passes: `npm run lint`
+- [x] 5.1 Stryker dev deps install cleanly: `npm install`
+- [x] 5.2 Stryker runs and produces a report: `npx stryker run --mutate "src/lib/services/recommendations.ts"` (run via `TZ=UTC` — see note)
+- [x] 5.3 Full unit suite still green: `npm run test`
+- [x] 5.4 Lint passes: `npm run lint`
 
 #### Manual
 

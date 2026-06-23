@@ -1,0 +1,8 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Selective, local-only mutation gate for the cut-math module (test-plan §5). Not a CI gate. Stryker runs Vitest directly, so determinism relies on the TZ=UTC pin in vitest.config.ts.",
+  "testRunner": "vitest",
+  "mutate": ["src/lib/services/recommendations.ts"],
+  "reporters": ["html", "clear-text", "progress"],
+  "coverageAnalysis": "perTest"
+}

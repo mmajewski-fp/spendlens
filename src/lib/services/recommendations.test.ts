@@ -216,6 +216,24 @@ describe("computeRecommendations", () => {
         { categorySlug: "shopping", categoryName: "Shopping", estimatedSavingCents: 50_000 },
       ]);
     });
+
+    it("sums multiple transactions in the same category into one bucket", () => {
+      // Two dining transactions must accumulate into a single 90000 bucket
+      // (exercises the bucket-merge branch, not two separate buckets).
+      const transactions = [
+        income(1_000_000),
+        expense("dining", "Dining", 50_000),
+        expense("dining", "Dining", 40_000),
+      ];
+      // surplus 910000; target 1000000 over 1 month → gap 90000 → one dining cut.
+      const goals = [makeGoal(1_000_000, "2026-07-01", "Accumulate")];
+
+      const result = computeRecommendations(transactions, goals);
+
+      expect(result.goals[0].suggestions).toEqual([
+        { categorySlug: "dining", categoryName: "Dining", estimatedSavingCents: 90_000 },
+      ]);
+    });
   });
 
   describe("Risk #2: degenerate-input guards", () => {
