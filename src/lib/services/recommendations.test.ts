@@ -8,39 +8,55 @@ import type { RecommendationsResult, SavingsGoal, TransactionWithCategory } from
 // (2026-06-01 → window starts 2026-05-02). Tests run under TZ=UTC (see the
 // `test` script) so all Date math is exact and DST-free.
 
-function expense(slug: string, name: string, amountCents: number): TransactionWithCategory {
+function expense(slug: string, name: string, amountCents: number, date = "2026-05-20"): TransactionWithCategory {
   return {
-    id: `tx-${slug}`,
+    id: `tx-${slug}-${date}`,
     user_id: "user-1",
     category_id: `cat-${slug}`,
     amount: amountCents,
     type: "expense",
     description: null,
-    date: "2026-05-20",
+    date,
     external_id: null,
-    created_at: "2026-05-20T00:00:00Z",
+    created_at: `${date}T00:00:00Z`,
     category: { name, slug },
   };
 }
 
-function income(amountCents: number): TransactionWithCategory {
+// Expense with no category — the engine buckets it as name "Other" / slug "other".
+function uncategorizedExpense(amountCents: number, date = "2026-05-20"): TransactionWithCategory {
   return {
-    id: "tx-income",
+    id: `tx-uncategorized-${date}`,
+    user_id: "user-1",
+    category_id: null,
+    amount: amountCents,
+    type: "expense",
+    description: null,
+    date,
+    external_id: null,
+    created_at: `${date}T00:00:00Z`,
+    category: null,
+  };
+}
+
+function income(amountCents: number, date = "2026-05-20"): TransactionWithCategory {
+  return {
+    id: `tx-income-${date}`,
     user_id: "user-1",
     category_id: null,
     amount: amountCents,
     type: "income",
     description: null,
-    date: "2026-05-20",
+    date,
     external_id: null,
-    created_at: "2026-05-20T00:00:00Z",
+    created_at: `${date}T00:00:00Z`,
     category: null,
   };
 }
 
-function makeGoal(targetAmountCents: number, targetDate: string, name = "Goal"): SavingsGoal {
+function makeGoal(targetAmountCents: number, targetDate: string, name = "Goal", id = "goal-1"): SavingsGoal {
   return {
-    id: "goal-1",
+    id,
     user_id: "user-1",
     name,
     target_amount: targetAmountCents,
@@ -142,6 +158,63 @@ describe("computeRecommendations", () => {
       expect(goal.requiredMonthlySavingCents).toBe(100_000);
       expect(goal.isOnTrack).toBe(true);
       expect(goal.suggestions).toEqual([]);
+    });
+
+    it("rounds the required monthly saving up to reach the goal (ceil)", () => {
+      // target 100000 over 3 months (today + 90 days) → 100000/3 = 33333.33.
+      // Rounding DOWN (33333 × 3 = 99999) would fall short of the goal, so the
+      // oracle is ceil = 33334.
+      const result = computeRecommendations([income(400_000)], [makeGoal(100_000, "2026-08-30", "Rounding")]);
+
+      expect(result.goals[0].requiredMonthlySavingCents).toBe(33_334);
+    });
+
+    it("counts a transaction on the 30-day boundary and excludes one past it", () => {
+      // Window starts 2026-05-02 (today − 30d). 05-02 is included (>=); 05-01 is not.
+      const result = computeRecommendations(
+        [income(400_000, "2026-05-02"), expense("dining", "Dining", 100_000, "2026-05-01")],
+        [makeGoal(5_000_000, "2026-10-29", "Boundary")],
+      );
+
+      // The boundary income is counted; the day-too-old expense is dropped, so
+      // it never reduces the surplus.
+      expect(result.monthlyIncomeCents).toBe(400_000);
+      expect(result.goals[0].currentSurplusCents).toBe(400_000);
+    });
+
+    it("buckets an uncategorized expense as Other / other", () => {
+      // surplus 940000; target 1000000 over 1 month (today + 30d) → required
+      // 1000000, gap 60000 → the only (uncategorized) bucket absorbs it fully.
+      const result = computeRecommendations(
+        [income(1_000_000), uncategorizedExpense(60_000)],
+        [makeGoal(1_000_000, "2026-07-01", "Uncategorized")],
+      );
+
+      expect(result.goals[0].suggestions).toEqual([
+        { categorySlug: "other", categoryName: "Other", estimatedSavingCents: 60_000 },
+      ]);
+    });
+
+    it("computes per-goal suggestions independently and preserves input order", () => {
+      const transactions = [
+        income(400_000),
+        expense("dining", "Dining", 80_000),
+        expense("shopping", "Shopping", 50_000),
+      ];
+      // surplus 270000. Goal A is covered (required 100000 → on track, no cuts);
+      // Goal B needs cuts (required 400000 → gap 130000). Same spend pool, two
+      // independent results; output order matches input order.
+      const goals = [makeGoal(500_000, "2026-10-29", "A", "goal-a"), makeGoal(2_000_000, "2026-10-29", "B", "goal-b")];
+
+      const result = computeRecommendations(transactions, goals);
+
+      expect(result.goals.map((g) => g.goalId)).toEqual(["goal-a", "goal-b"]);
+      expect(result.goals[0].isOnTrack).toBe(true);
+      expect(result.goals[0].suggestions).toEqual([]);
+      expect(result.goals[1].suggestions).toEqual([
+        { categorySlug: "dining", categoryName: "Dining", estimatedSavingCents: 80_000 },
+        { categorySlug: "shopping", categoryName: "Shopping", estimatedSavingCents: 50_000 },
+      ]);
     });
   });
 
