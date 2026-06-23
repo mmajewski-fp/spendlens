@@ -162,6 +162,7 @@ describe("computeRecommendations", () => {
       const result = computeRecommendations(transactions, goals);
 
       // months floored to 1 → required is finite, not NaN/Infinity.
+      expect(result.goals.length).toBe(1);
       expectAllFieldsFinite(result);
       expect(result.goals[0].isExpired).toBe(false); // strictly-past test, today is not expired
     });
@@ -172,6 +173,7 @@ describe("computeRecommendations", () => {
 
       const result = computeRecommendations(transactions, goals);
 
+      expect(result.goals.length).toBe(1);
       expectAllFieldsFinite(result);
       expect(result.goals[0].isExpired).toBe(true);
     });
@@ -182,6 +184,7 @@ describe("computeRecommendations", () => {
 
       const result = computeRecommendations(transactions, goals);
 
+      expect(result.goals.length).toBe(1);
       expectAllFieldsFinite(result);
       expect(result.hasMissingIncome).toBe(false);
       expect(result.goals[0].currentSurplusCents).toBe(-50_000); // negative but finite
@@ -193,6 +196,7 @@ describe("computeRecommendations", () => {
 
       const result = computeRecommendations(transactions, goals);
 
+      expect(result.goals.length).toBe(1);
       expectAllFieldsFinite(result);
       expect(result.hasMissingIncome).toBe(true);
       expect(result.alerts).toEqual([]);
