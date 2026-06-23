@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
-  "_comment": "Selective, local-only mutation gate for the cut-math module (test-plan §5). Not a CI gate. Stryker runs Vitest directly, so determinism relies on the TZ=UTC pin in vitest.config.ts.",
+  "_comment": "Selective, local-only mutation gate for the cut-math module (test-plan §5). Not a CI gate. Run via `npm run test:mutation`, NOT bare `npx stryker run`: that script's TZ=UTC prefix sets the timezone on the process so Stryker's spawned Vitest workers inherit it. The vitest.config.ts test.env.TZ pin is NOT reliably propagated to Stryker workers.",
   "testRunner": "vitest",
   "mutate": ["src/lib/services/recommendations.ts"],
   "reporters": ["html", "clear-text", "progress"],

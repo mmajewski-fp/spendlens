@@ -25,6 +25,11 @@ function monthsRemaining(today: Date, targetDate: Date): number {
   return Math.max(1, Math.ceil(diffDays / DAYS_PER_MONTH));
 }
 
+/** Deterministic codepoint string comparison (locale-independent — see impl-review F1). */
+function compareStrings(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
 interface CategoryBucket {
   name: string;
   slug: string;
@@ -86,7 +91,7 @@ export function computeRecommendations(
 
   // Per-goal recommendations
   const sortedBuckets = [...buckets.values()].sort(
-    (a, b) => b.totalCents - a.totalCents || a.name.localeCompare(b.name) || a.slug.localeCompare(b.slug),
+    (a, b) => b.totalCents - a.totalCents || compareStrings(a.name, b.name) || compareStrings(a.slug, b.slug),
   );
 
   const goalRecommendations: GoalRecommendation[] = goals.map((goal) => {

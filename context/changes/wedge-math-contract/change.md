@@ -1,7 +1,7 @@
 ---
 change_id: wedge-math-contract
 title: Wedge-math contract — full behavioral coverage of the cut engine
-status: implemented
+status: impl_reviewed
 created: 2026-06-23
 updated: 2026-06-23
 archived_at: null
