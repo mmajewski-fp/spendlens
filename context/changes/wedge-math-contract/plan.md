@@ -385,8 +385,8 @@ commit(s).
 
 #### Automated
 
-- [x] 1.1 All Risk #1 tests pass: `npm run test`
-- [x] 1.2 Lint passes: `npm run lint`
+- [x] 1.1 All Risk #1 tests pass: `npm run test` — 375485a
+- [x] 1.2 Lint passes: `npm run lint` — 375485a
 
 #### Manual
 
@@ -396,9 +396,9 @@ commit(s).
 
 #### Automated
 
-- [ ] 2.1 All Risk #2 parameterized cases pass: `npm run test`
-- [ ] 2.2 The `it.todo` is gone, replaced by a documenting comment (`grep` returns nothing)
-- [ ] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 All Risk #2 parameterized cases pass: `npm run test`
+- [x] 2.2 The `it.todo` is gone, replaced by a documenting comment (`grep` returns nothing)
+- [x] 2.3 Lint passes: `npm run lint`
 
 #### Manual
 

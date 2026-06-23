@@ -228,58 +228,65 @@ describe("computeRecommendations", () => {
       vi.useRealTimers();
     });
 
-    it("stays finite when the goal timeframe is zero (target date is today)", () => {
-      const transactions = [income(400_000), expense("dining", "Dining", 80_000)];
-      const goals = [makeGoal(1_500_000, "2026-06-01", "Due today")];
+    const degenerateCases: {
+      name: string;
+      transactions: TransactionWithCategory[];
+      goals: SavingsGoal[];
+      check: (result: RecommendationsResult) => void;
+    }[] = [
+      {
+        name: "timeframe zero (target date is today) — not expired (strict <)",
+        transactions: [income(400_000), expense("dining", "Dining", 80_000)],
+        goals: [makeGoal(1_500_000, "2026-06-01", "Due today")],
+        check: (r) => {
+          expect(r.goals[0].isExpired).toBe(false);
+        },
+      },
+      {
+        name: "past date — expired, suggestions still computed (ratified shipped design)",
+        transactions: [income(400_000), expense("dining", "Dining", 80_000)],
+        goals: [makeGoal(1_500_000, "2026-05-15", "Already overdue")],
+        check: (r) => {
+          expect(r.goals[0].isExpired).toBe(true);
+          // Decision D: an expired goal keeps its aggressive cuts (months floored
+          // to 1), NOT an empty/sentinel result.
+          expect(r.goals[0].suggestions.length).toBeGreaterThan(0);
+        },
+      },
+      {
+        name: "negative surplus with income present — finite, not missing-income",
+        transactions: [income(100_000), expense("dining", "Dining", 150_000)],
+        goals: [makeGoal(1_500_000, "2026-10-29", "Underwater")],
+        check: (r) => {
+          expect(r.hasMissingIncome).toBe(false);
+          expect(r.goals[0].currentSurplusCents).toBe(-50_000); // negative but finite
+        },
+      },
+      {
+        name: "missing income — empty sentinel (no suggestions, no alerts)",
+        transactions: [expense("dining", "Dining", 80_000)],
+        goals: [makeGoal(1_500_000, "2026-10-29", "No income")],
+        check: (r) => {
+          expect(r.hasMissingIncome).toBe(true);
+          expect(r.alerts).toEqual([]);
+          expect(r.goals[0].suggestions).toEqual([]);
+        },
+      },
+    ];
 
+    it.each(degenerateCases)("stays finite and guarded: $name", ({ transactions, goals, check }) => {
       const result = computeRecommendations(transactions, goals);
 
-      // months floored to 1 → required is finite, not NaN/Infinity.
+      // Risk #2 invariant: no NaN/±Infinity reaches the UI, for every input.
       expect(result.goals.length).toBe(1);
       expectAllFieldsFinite(result);
-      expect(result.goals[0].isExpired).toBe(false); // strictly-past test, today is not expired
+      check(result);
     });
 
-    it("stays finite when the goal date is in the past", () => {
-      const transactions = [income(400_000), expense("dining", "Dining", 80_000)];
-      const goals = [makeGoal(1_500_000, "2026-05-15", "Already overdue")];
-
-      const result = computeRecommendations(transactions, goals);
-
-      expect(result.goals.length).toBe(1);
-      expectAllFieldsFinite(result);
-      expect(result.goals[0].isExpired).toBe(true);
-    });
-
-    it("stays finite when the surplus is negative (expenses exceed income)", () => {
-      const transactions = [income(100_000), expense("dining", "Dining", 150_000)];
-      const goals = [makeGoal(1_500_000, "2026-10-29", "Underwater")];
-
-      const result = computeRecommendations(transactions, goals);
-
-      expect(result.goals.length).toBe(1);
-      expectAllFieldsFinite(result);
-      expect(result.hasMissingIncome).toBe(false);
-      expect(result.goals[0].currentSurplusCents).toBe(-50_000); // negative but finite
-    });
-
-    it("returns the empty sentinel when income is missing", () => {
-      const transactions = [expense("dining", "Dining", 80_000)];
-      const goals = [makeGoal(1_500_000, "2026-10-29", "No income")];
-
-      const result = computeRecommendations(transactions, goals);
-
-      expect(result.goals.length).toBe(1);
-      expectAllFieldsFinite(result);
-      expect(result.hasMissingIncome).toBe(true);
-      expect(result.alerts).toEqual([]);
-      expect(result.goals[0].suggestions).toEqual([]);
-    });
-
-    // Out-of-contract NaN vector: a malformed target_date string is parsed by
-    // toDateOnly without a validity check, cascading to NaN through to the UI.
-    // Not reachable from the DB/API today; fixing + asserting it belongs to
-    // rollout Phase 2 (Wedge-math contract). See research.md Open Q2.
-    it.todo("malformed target_date string must not yield NaN — add guard + assertion in rollout Phase 2");
+    // Out-of-contract: a malformed/unparseable target_date is NOT tested.
+    // target_date validity is guaranteed upstream — DB `date NOT NULL` plus the
+    // API zod schema (YYYY-MM-DD regex + future-date refine) — so a bad string is
+    // unreachable in production and the engine trusts its callers. Decided
+    // won't-fix in Phase-2 research (decision G): no guard, no assertion.
   });
 });
