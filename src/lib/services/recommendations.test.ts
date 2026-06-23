@@ -289,4 +289,86 @@ describe("computeRecommendations", () => {
     // unreachable in production and the engine trusts its callers. Decided
     // won't-fix in Phase-2 research (decision G): no guard, no assertion.
   });
+
+  describe("Risk #3: ranking order & cap", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-06-01T00:00:00Z"));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("orders suggestions by spend descending (highest-impact first), not alphabetically", () => {
+      // Spend order transport(30000) > dining(20000) > shopping(10000) is the
+      // REVERSE of alphabetical — proving the rank is by spend (the PRD
+      // "highest-impact → lowest" rule), not by category name.
+      const transactions = [
+        income(1_000_000),
+        expense("transport", "Transport", 30_000),
+        expense("dining", "Dining", 20_000),
+        expense("shopping", "Shopping", 10_000),
+      ];
+      // surplus 940000; target 1000000 over 1 month → gap 60000 = sum of all three.
+      const goals = [makeGoal(1_000_000, "2026-07-01", "All three")];
+
+      const result = computeRecommendations(transactions, goals);
+
+      expect(result.goals[0].suggestions.map((s) => s.categorySlug)).toEqual(["transport", "dining", "shopping"]);
+    });
+
+    it("cuts the minimum set to close the gap and leaves smaller categories untouched", () => {
+      const transactions = [
+        income(1_000_000),
+        expense("shopping", "Shopping", 50_000),
+        expense("dining", "Dining", 40_000),
+        expense("groceries", "Groceries", 30_000),
+        expense("transport", "Transport", 20_000),
+      ];
+      // surplus 860000; target 930000 over 1 month → gap 70000, closed by
+      // shopping (50000) + part of dining (20000). groceries/transport untouched.
+      const goals = [makeGoal(930_000, "2026-07-01", "Minimum set")];
+
+      const { suggestions } = computeRecommendations(transactions, goals).goals[0];
+
+      expect(suggestions).toEqual([
+        { categorySlug: "shopping", categoryName: "Shopping", estimatedSavingCents: 50_000 },
+        { categorySlug: "dining", categoryName: "Dining", estimatedSavingCents: 20_000 },
+      ]);
+      // Sum equals the gap exactly; the walk stopped before the smaller categories.
+      const total = suggestions.reduce((sum, s) => sum + s.estimatedSavingCents, 0);
+      expect(total).toBe(70_000);
+    });
+
+    it("caps suggestions at 5, keeping the highest-spend categories (gap may stay open)", () => {
+      const transactions = [
+        income(1_000_000),
+        expense("shopping", "Shopping", 60_000),
+        expense("dining", "Dining", 50_000),
+        expense("groceries", "Groceries", 40_000),
+        expense("transport", "Transport", 30_000),
+        expense("entertainment", "Entertainment", 20_000),
+        expense("utilities", "Utilities", 10_000),
+      ];
+      // Gap (1210000) dwarfs total spend, so all six would help — but the cap
+      // stops at the 5 highest-spend categories; utilities (smallest) is dropped
+      // and the gap stays open (documented truncation, not a bug).
+      const goals = [makeGoal(2_000_000, "2026-07-01", "Over cap")];
+
+      const goal = computeRecommendations(transactions, goals).goals[0];
+
+      expect(goal.suggestions).toHaveLength(5);
+      expect(goal.suggestions.map((s) => s.categorySlug)).toEqual([
+        "shopping",
+        "dining",
+        "groceries",
+        "transport",
+        "entertainment",
+      ]);
+      // 5 cuts fall short of the gap (required − surplus); it remains open.
+      const total = goal.suggestions.reduce((sum, s) => sum + s.estimatedSavingCents, 0);
+      expect(total).toBeLessThan(goal.requiredMonthlySavingCents - goal.currentSurplusCents);
+    });
+  });
 });
