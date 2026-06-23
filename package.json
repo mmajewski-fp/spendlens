@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "test": "TZ=UTC vitest run",
     "test:watch": "TZ=UTC vitest",
-    "test:mutation": "TZ=UTC stryker run"
+    "test:mutation": "TZ=UTC stryker run",
+    "test:integration": "TZ=UTC vitest run --config vitest.config.integration.ts"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.8",
