@@ -285,8 +285,8 @@ Rollback = revert the commits.
 
 #### Automated
 
-- [x] 3.1 §6.1 and §6.3 no longer contain "TBD" (inspect `context/foundation/test-plan.md`)
-- [x] 3.2 Markdown is Prettier-clean: `npx prettier --check context/foundation/test-plan.md`
+- [x] 3.1 §6.1 and §6.3 no longer contain "TBD" (inspect `context/foundation/test-plan.md`) — 0f090e8
+- [x] 3.2 Markdown is Prettier-clean: `npx prettier --check context/foundation/test-plan.md` — 0f090e8
 
 #### Manual
 
