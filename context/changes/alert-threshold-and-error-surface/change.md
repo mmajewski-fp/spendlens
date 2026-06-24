@@ -1,7 +1,7 @@
 ---
 change_id: alert-threshold-and-error-surface
 title: Threshold oracle + SSR error surface + cookbook (rollout Phase 4)
-status: implemented
+status: impl_reviewed
 created: 2026-06-24
 updated: 2026-06-24
 archived_at: null
