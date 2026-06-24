@@ -386,9 +386,9 @@ schema/migration changes. The integration suite is opt-in (not in CI); rollback
 
 #### Automated
 
-- [x] 2.1 Isolation tests pass: `npm run test:integration`
-- [x] 2.2 Unit suite still green and unit-only: `npm run test`
-- [x] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 Isolation tests pass: `npm run test:integration` — bd9d81c
+- [x] 2.2 Unit suite still green and unit-only: `npm run test` — bd9d81c
+- [x] 2.3 Lint passes: `npm run lint` — bd9d81c
 
 #### Manual
 
@@ -399,9 +399,9 @@ schema/migration changes. The integration suite is opt-in (not in CI); rollback
 
 #### Automated
 
-- [ ] 3.1 Cap integration test passes (4th goal rejected by the trigger): `npm run test:integration`
-- [ ] 3.2 Handler hermetic tests pass inside the unit suite: `npm run test`
-- [ ] 3.3 Lint passes: `npm run lint`
+- [x] 3.1 Cap integration test passes (4th goal rejected by the trigger): `npm run test:integration`
+- [x] 3.2 Handler hermetic tests pass inside the unit suite: `npm run test`
+- [x] 3.3 Lint passes: `npm run lint`
 
 #### Manual
 
