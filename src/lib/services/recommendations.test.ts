@@ -406,4 +406,52 @@ describe("computeRecommendations", () => {
       expect(result.goals[0].suggestions.map((s) => s.categorySlug)).toEqual(["apparel", "dining"]);
     });
   });
+
+  describe("Risk #4: excessive-spending alerts", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-06-01T00:00:00Z"));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    // Oracle = resolved PRD Open Q2 (2026-06-24): a category is "disproportionately
+    // high" when its 30-day spend exceeds 12% of monthly income — threshold =
+    // floor(income × 0.12), alert when spend > threshold (strict). Numbers are
+    // hand-worked from the spec, NOT read off the ALERT_INCOME_FRACTION constant.
+    it("alerts categories over 12% of income, excludes the one exactly at the threshold, sorted desc", () => {
+      // income 1000000 → threshold = floor(1000000 × 0.12) = 120000
+      const transactions = [
+        income(1_000_000),
+        expense("shopping", "Shopping", 200_000), // > threshold → alert
+        expense("dining", "Dining", 120_001), // just over → alert
+        expense("housing", "Housing", 120_000), // == threshold → NO alert (strict >)
+        expense("transport", "Transport", 50_000), // below → no alert
+      ];
+
+      const result = computeRecommendations(transactions, []);
+
+      expect(result.alerts).toEqual([
+        { categorySlug: "shopping", categoryName: "Shopping", spendCents: 200_000, thresholdCents: 120_000 },
+        { categorySlug: "dining", categoryName: "Dining", spendCents: 120_001, thresholdCents: 120_000 },
+      ]);
+    });
+
+    it("rounds the threshold down (floor), not up", () => {
+      // income 1000005 → 1000005 × 0.12 = 120000.6 → floor 120000 (ceil would be 120001).
+      // A 120001 category alerts under floor; under ceil it would NOT.
+      const result = computeRecommendations([income(1_000_005), expense("dining", "Dining", 120_001)], []);
+
+      expect(result.alerts).toEqual([
+        { categorySlug: "dining", categoryName: "Dining", spendCents: 120_001, thresholdCents: 120_000 },
+      ]);
+    });
+
+    it("shows no alerts when income is missing (no baseline)", () => {
+      const result = computeRecommendations([expense("dining", "Dining", 80_000)], []);
+      expect(result.alerts).toEqual([]);
+    });
+  });
 });
