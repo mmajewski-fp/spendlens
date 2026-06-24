@@ -84,12 +84,12 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status as artifacts appear on disk.
 
-| #   | Phase name                                      | Goal (one line)                                                                                      | Risks covered | Test types                               | Status      | Change folder                                   |
-| --- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------- | ----------- | ----------------------------------------------- |
-| 1   | Runner bootstrap + first wedge test             | Stand up Vitest, wire it into CI, and land the first real assertion on the cut-math                  | #1, #2        | unit                                     | planned     | context/changes/testing-runner-bootstrap-wedge/ |
-| 2   | Wedge-math contract                             | Full behavioral coverage of the cut engine: correct amounts, degenerate-input guards, ranking order  | #1, #2, #3    | unit (parameterized + edge)              | planned     | context/changes/wedge-math-contract/            |
-| 3   | Data-tier guardrails                            | Prove ownership isolation and the 3-goal cap hold against real DB constraints a mock would lie about | #5, #6        | integration (real Supabase, ad-hoc gate) | planned     | context/changes/data-tier-guardrails/           |
-| 4   | Threshold oracle + SSR error surface + cookbook | Assert the (resolved) alert threshold and the SSR error contract; fill in §6 cookbook                | #4, #7        | unit / hermetic + cookbook               | not started | —                                               |
+| #   | Phase name                                      | Goal (one line)                                                                                      | Risks covered | Test types                               | Status  | Change folder                                      |
+| --- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------- | ------- | -------------------------------------------------- |
+| 1   | Runner bootstrap + first wedge test             | Stand up Vitest, wire it into CI, and land the first real assertion on the cut-math                  | #1, #2        | unit                                     | planned | context/changes/testing-runner-bootstrap-wedge/    |
+| 2   | Wedge-math contract                             | Full behavioral coverage of the cut engine: correct amounts, degenerate-input guards, ranking order  | #1, #2, #3    | unit (parameterized + edge)              | planned | context/changes/wedge-math-contract/               |
+| 3   | Data-tier guardrails                            | Prove ownership isolation and the 3-goal cap hold against real DB constraints a mock would lie about | #5, #6        | integration (real Supabase, ad-hoc gate) | planned | context/changes/data-tier-guardrails/              |
+| 4   | Threshold oracle + SSR error surface + cookbook | Assert the (resolved) alert threshold and the SSR error contract; fill in §6 cookbook                | #4, #7        | unit / hermetic + cookbook               | planned | context/changes/alert-threshold-and-error-surface/ |
 
 **Status vocabulary** (fixed — parser literals): `not started` → `change opened`
 → `researched` → `planned` → `implementing` → `complete`.
@@ -142,9 +142,17 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.1 Adding a unit test
 
-- TBD — see §3 Phase 1 (Vitest bootstrap) and Phase 2 (wedge-math contract).
-  Will document: location/naming convention, how to assert the cut-math
-  against a hand-worked oracle (not the implementation), and the run command.
+- **Where**: co-locate `*.test.ts` next to the source (e.g.
+  `src/lib/services/recommendations.test.ts`); the unit config collects
+  `src/**/*.test.ts`. Use explicit `vitest` imports (no globals).
+- **Runner**: `npm run test` (CI) / `npm run test:watch` — both set `TZ=UTC`. The
+  cut-math reads the wall clock (30-day window, months-remaining), so freeze it
+  with `vi.useFakeTimers()` + `vi.setSystemTime("2026-06-01T00:00:00Z")` in a
+  per-`describe` `beforeEach`/`afterEach`, and date fixtures inside the window.
+- **Oracle discipline**: assert a hand-worked value from the PRD / domain (the cut
+  amounts; the alert threshold `floor(income × 0.12)`), NEVER the implementation
+  constant — an oracle-mirror passes against a bug. Add at least one edge per risk
+  (boundary, missing input, degenerate). See `recommendations.test.ts`.
 
 ### 6.2 Adding an integration test (real Supabase)
 
@@ -171,10 +179,21 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.3 Adding a hermetic (stub-client) test
 
-- TBD — see §3 Phase 4. Will document: how to stub the Supabase client to
-  exercise partial-failure and error-contract branches that real infra
-  cannot easily trigger, and when a hermetic test lies (DB constraints,
-  cascades — use integration instead).
+- **When**: for partial-failure / error-contract branches real infra can't easily
+  trigger — e.g. a service wrapping a Supabase error into a clean message-only
+  `Error` (the SSR error contract, Risk #7), or an API handler's status mapping.
+  Runs in the fast unit suite (`npm run test`), no Docker.
+- **How**: stub a chainable client (the query builder is a thenable — chain
+  methods return the same object; `then` resolves `{ data, error }`) and pass it
+  to the service; assert the contract (e.g. the thrown value is an `Error` with
+  only `.message` — no raw `{code,details,hint}`/PII). See
+  `src/lib/services/savings-goals.test.ts`. For a route handler, `vi.mock` the
+  client + service and invoke it with a mocked `APIContext` (mocking
+  `@/lib/supabase` also dodges the `astro:env` virtual import) — see
+  `src/pages/api/goals.test.ts`.
+- **When a hermetic test LIES**: it can't prove DB constraints, cascades, or RLS
+  (a stub returns whatever you tell it) — use a real-Supabase integration test
+  (§6.2) for those.
 
 ### 6.4 Adding a test for a new API endpoint
 

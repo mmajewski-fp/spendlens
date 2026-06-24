@@ -273,8 +273,8 @@ Rollback = revert the commits.
 
 #### Automated
 
-- [x] 2.1 Both service-error-contract tests pass inside the unit suite: `npm run test`
-- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Both service-error-contract tests pass inside the unit suite: `npm run test` — a673024
+- [x] 2.2 Lint passes: `npm run lint` — a673024
 
 #### Manual
 
@@ -285,8 +285,8 @@ Rollback = revert the commits.
 
 #### Automated
 
-- [ ] 3.1 §6.1 and §6.3 no longer contain "TBD" (inspect `context/foundation/test-plan.md`)
-- [ ] 3.2 Markdown is Prettier-clean: `npx prettier --check context/foundation/test-plan.md`
+- [x] 3.1 §6.1 and §6.3 no longer contain "TBD" (inspect `context/foundation/test-plan.md`)
+- [x] 3.2 Markdown is Prettier-clean: `npx prettier --check context/foundation/test-plan.md`
 
 #### Manual
 
