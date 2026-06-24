@@ -92,5 +92,8 @@ describe("Risk #5: ownership isolation", () => {
 
     const bGoals = await getUserGoals(userB.client);
     expect(bGoals.some((g) => g.id === bGoalId)).toBe(true); // B's goal SURVIVES
+
+    const aGoals = await getUserGoals(userA.client);
+    expect(aGoals.map((g) => g.id)).toEqual([aGoalId]); // A's own goals unaffected (zero rows deleted)
   });
 });

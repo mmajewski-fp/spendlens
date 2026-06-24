@@ -1,7 +1,7 @@
 ---
 change_id: data-tier-guardrails
 title: Data-tier guardrails — ownership isolation and the 3-goal cap against real DB constraints
-status: implemented
+status: impl_reviewed
 created: 2026-06-23
 updated: 2026-06-24
 archived_at: null
