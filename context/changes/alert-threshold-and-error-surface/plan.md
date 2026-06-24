@@ -261,8 +261,8 @@ Rollback = revert the commits.
 
 #### Automated
 
-- [x] 1.1 Risk #4 alert tests pass: `npm run test`
-- [x] 1.2 Lint passes: `npm run lint`
+- [x] 1.1 Risk #4 alert tests pass: `npm run test` — c6c45c3
+- [x] 1.2 Lint passes: `npm run lint` — c6c45c3
 
 #### Manual
 
@@ -273,8 +273,8 @@ Rollback = revert the commits.
 
 #### Automated
 
-- [ ] 2.1 Both service-error-contract tests pass inside the unit suite: `npm run test`
-- [ ] 2.2 Lint passes: `npm run lint`
+- [x] 2.1 Both service-error-contract tests pass inside the unit suite: `npm run test`
+- [x] 2.2 Lint passes: `npm run lint`
 
 #### Manual
 
