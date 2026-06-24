@@ -374,9 +374,9 @@ schema/migration changes. The integration suite is opt-in (not in CI); rollback
 
 #### Automated
 
-- [x] 1.1 Integration suite boots Supabase and the round-trip passes: `npm run test:integration`
-- [x] 1.2 Unit suite unaffected and unit-only (no integration test collected): `npm run test`
-- [x] 1.3 Lint passes on new config/helpers/test: `npm run lint`
+- [x] 1.1 Integration suite boots Supabase and the round-trip passes: `npm run test:integration` — d90a490
+- [x] 1.2 Unit suite unaffected and unit-only (no integration test collected): `npm run test` — d90a490
+- [x] 1.3 Lint passes on new config/helpers/test: `npm run lint` — d90a490
 
 #### Manual
 
@@ -386,9 +386,9 @@ schema/migration changes. The integration suite is opt-in (not in CI); rollback
 
 #### Automated
 
-- [ ] 2.1 Isolation tests pass: `npm run test:integration`
-- [ ] 2.2 Unit suite still green and unit-only: `npm run test`
-- [ ] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 Isolation tests pass: `npm run test:integration`
+- [x] 2.2 Unit suite still green and unit-only: `npm run test`
+- [x] 2.3 Lint passes: `npm run lint`
 
 #### Manual
 
