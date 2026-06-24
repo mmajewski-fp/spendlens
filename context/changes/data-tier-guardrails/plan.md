@@ -412,8 +412,8 @@ schema/migration changes. The integration suite is opt-in (not in CI); rollback
 
 #### Automated
 
-- [x] 4.1 §6.2 and §6.4 no longer contain "TBD" (inspect `context/foundation/test-plan.md`)
-- [x] 4.2 Lint/format passes on the markdown: `npm run lint`
+- [x] 4.1 §6.2 and §6.4 no longer contain "TBD" (inspect `context/foundation/test-plan.md`) — 98ce48a
+- [x] 4.2 Lint/format passes on the markdown: `npm run lint` — 98ce48a
 
 #### Manual
 
