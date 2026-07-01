@@ -330,8 +330,8 @@ None — no schema changes. Imported rows are ordinary `transactions` rows remov
 
 #### Automated
 
-- [x] 4.1 Integration tests pass: `npm run test:integration` (Docker + `npx supabase start`)
+- [x] 4.1 Integration tests pass: `npm run test:integration` (Docker + `npx supabase start`) — ca3c69a
 
 #### Manual
 
-- [x] 4.2 Confirmed the integration suite was run locally (ad-hoc, not CI)
+- [x] 4.2 Confirmed the integration suite was run locally (ad-hoc, not CI) — ca3c69a
