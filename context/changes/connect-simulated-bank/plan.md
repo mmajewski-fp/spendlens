@@ -313,25 +313,25 @@ None — no schema changes. Imported rows are ordinary `transactions` rows remov
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx astro check`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Build passes: `npm run build`
-- [x] 3.4 Tests pass: `npm run test`
+- [x] 3.1 Type checking passes: `npx astro check` — ab89ec9
+- [x] 3.2 Linting passes: `npm run lint` — ab89ec9
+- [x] 3.3 Build passes: `npm run build` — ab89ec9
+- [x] 3.4 Tests pass: `npm run test` — ab89ec9
 
 #### Manual
 
-- [x] 3.5 Unauthenticated visit to `/transactions/import` redirects to sign-in
-- [x] 3.6 Dashboard button and recommendations CTA both navigate to `/transactions/import`
-- [x] 3.7 "Connect Bank" imports data and shows "Imported N transactions" with a working onward link
-- [x] 3.8 Re-clicking shows "0 new — already imported"
-- [x] 3.9 After import, `/dashboard` and `/recommendations` render real per-user data
+- [x] 3.5 Unauthenticated visit to `/transactions/import` redirects to sign-in — ab89ec9
+- [x] 3.6 Dashboard button and recommendations CTA both navigate to `/transactions/import` — ab89ec9
+- [x] 3.7 "Connect Bank" imports data and shows "Imported N transactions" with a working onward link — ab89ec9
+- [x] 3.8 Re-clicking shows "0 new — already imported" — ab89ec9
+- [x] 3.9 After import, `/dashboard` and `/recommendations` render real per-user data — ab89ec9
 
 ### Phase 4: Integration tests (real Supabase, ad-hoc)
 
 #### Automated
 
-- [ ] 4.1 Integration tests pass: `npm run test:integration` (Docker + `npx supabase start`)
+- [x] 4.1 Integration tests pass: `npm run test:integration` (Docker + `npx supabase start`)
 
 #### Manual
 
-- [ ] 4.2 Confirmed the integration suite was run locally (ad-hoc, not CI)
+- [x] 4.2 Confirmed the integration suite was run locally (ad-hoc, not CI)
