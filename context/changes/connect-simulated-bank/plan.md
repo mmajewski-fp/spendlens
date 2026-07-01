@@ -289,25 +289,25 @@ None — no schema changes. Imported rows are ordinary `transactions` rows remov
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx astro check`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Unit tests pass: `npm run test`
+- [x] 1.1 Type checking passes: `npx astro check` — 588e69c
+- [x] 1.2 Linting passes: `npm run lint` — 588e69c
+- [x] 1.3 Unit tests pass: `npm run test` — 588e69c
 
 #### Manual
 
-- [x] 1.4 Generated dataset looks like a plausible month (descriptions, amounts, category spread)
+- [x] 1.4 Generated dataset looks like a plausible month (descriptions, amounts, category spread) — 588e69c
 
 ### Phase 2: Orchestrator + API route
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx astro check`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Unit + hermetic tests pass: `npm run test`
+- [x] 2.1 Type checking passes: `npx astro check`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Unit + hermetic tests pass: `npm run test`
 
 #### Manual
 
-- [ ] 2.4 `POST /api/transactions/import` while signed in returns `{ imported: N }`
+- [x] 2.4 `POST /api/transactions/import` while signed in returns `{ imported: N }`
 
 ### Phase 3: SSR page + island + entry points
 
