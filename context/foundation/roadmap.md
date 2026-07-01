@@ -30,7 +30,7 @@ SpendLens helps a goal-saver — someone who has set a concrete savings target (
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 |---|---|---|---|---|---|
 | F-01 | data-schema-foundation | (foundation) transactions, savings_goals, categories tables and RLS policies are live in Supabase | — | NFR (data isolation), FR-003, FR-006, FR-007 | done |
-| S-01 | connect-simulated-bank | connect to the simulated banking API and have categorized transactions land in their account | F-01 | FR-003 | ready |
+| S-01 | connect-simulated-bank | connect to the simulated banking API and have categorized transactions land in their account | F-01 | FR-003 | done |
 | S-04 | create-savings-goal | create up to 3 active savings goals (target amount + timeframe) | F-01 | FR-006, FR-007 | done |
 | S-06 | goal-anchored-recommendations | view ranked expense-cutting suggestions per active goal alongside excessive-spending alerts | S-01, S-04 | US-01, FR-009, FR-010 | done |
 | S-02 | categorized-dashboard | view a spending summary dashboard with expenses grouped by category | S-01 | FR-004 | proposed |
@@ -88,7 +88,7 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **Unknowns:**
   - ~~Category taxonomy — fixed predefined list vs derived from transaction descriptions?~~ **Resolved 2026-07-01 (Open Roadmap Q3): fixed predefined taxonomy** — import maps each transaction onto one of the 11 seeded `categories` rows (`Other` fallback), setting `transactions.category_id`.
 - **Risk:** This slice owns both the simulated-API contract and the auto-categorization pipeline — two pieces with separate failure modes. Surface them together so downstream slices can assume "transactions are in and categorized" without re-checking.
-- **Status:** ready
+- **Status:** done
 
 ### S-04: Create savings goal (up to 3 active)
 
@@ -199,3 +199,4 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 
 - **S-04: A signed-in user creates a savings goal by entering a target amount and a timeframe; the goal is persisted under their account; the user is prevented from creating a fourth active goal.** — Archived 2026-06-03 → `context/archive/2026-06-02-create-savings-goal/`. Lesson: —.
 - **S-06: A signed-in user with imported transactions and at least one active savings goal navigates to the recommendations section and sees, per active goal, a ranked list of expense-cutting suggestions (category + estimated saving amount, mathematically tied to the goal's target and timeframe), alongside excessive-spending alerts for categories above the income-relative threshold.** — Archived 2026-07-01 → `context/archive/2026-05-27-goal-anchored-recommendations/`. Lesson: —.
+- **S-01: A signed-in user triggers "Connect Bank" from the dashboard, the simulated banking API returns transactions seeded against the user's account, and the import pipeline persists them under the user with auto-assigned categories. The user sees confirmation that data has landed (count or basic preview).** — Archived 2026-07-01 → `context/archive/2026-07-01-connect-simulated-bank/`. Lesson: —.
