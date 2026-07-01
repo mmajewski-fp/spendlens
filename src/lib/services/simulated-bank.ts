@@ -82,7 +82,7 @@ interface ExpenseTheme {
 }
 
 const EXPENSE_THEMES: readonly ExpenseTheme[] = [
-  { descriptions: ["Whole Foods Market", "Grocery Store", "Supermarket Trip"], minCents: 1_500, maxCents: 12_000 },
+  { descriptions: ["Whole Foods Supermarket", "Grocery Store", "Supermarket Trip"], minCents: 1_500, maxCents: 12_000 },
   {
     descriptions: ["Restaurant Dinner", "Corner Cafe", "Coffee Shop", "Pizzeria Order"],
     minCents: 800,

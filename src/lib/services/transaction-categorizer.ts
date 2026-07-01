@@ -39,7 +39,6 @@ const KEYWORD_TABLE: readonly (readonly [string, CategorySlug])[] = [
   ["mortgage", "housing"],
   ["grocer", "groceries"],
   ["supermarket", "groceries"],
-  ["market", "groceries"],
   ["restaurant", "dining"],
   ["cafe", "dining"],
   ["coffee", "dining"],

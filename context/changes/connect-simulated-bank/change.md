@@ -1,7 +1,7 @@
 ---
 change_id: connect-simulated-bank
 title: Connect simulated bank
-status: implemented
+status: impl_reviewed
 created: 2026-07-01
 updated: 2026-07-01
 archived_at: null

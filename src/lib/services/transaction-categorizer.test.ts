@@ -8,7 +8,7 @@ describe("categorize", () => {
   it.each([
     ["Monthly Salary Payroll", "salary"],
     ["Apartment Rent", "housing"],
-    ["Whole Foods Market", "groceries"],
+    ["Whole Foods Supermarket", "groceries"],
     ["Grocery Store", "groceries"],
     ["Restaurant Dinner", "dining"],
     ["Corner Cafe", "dining"],
@@ -34,7 +34,7 @@ describe("categorize", () => {
   });
 
   it("is case-insensitive and locale-independent", () => {
-    expect(categorize("WHOLE FOODS MARKET")).toBe("groceries");
+    expect(categorize("WHOLE FOODS SUPERMARKET")).toBe("groceries");
     expect(categorize("uBeR rIdE")).toBe("transport");
   });
 
