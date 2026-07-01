@@ -1,1 +1,11 @@
 npx lint-staged
+
+# Typecheck gate — Module 3 / Lesson 3.
+# `astro check` has no single-file mode (it checks the whole project, ~6s),
+# so it lives here on pre-commit rather than per-edit, per the test-plan
+# §5 quality gate. Skip it when no TS/Astro files are staged so doc-only
+# commits stay fast.
+if git diff --cached --name-only --diff-filter=ACMR | grep -qE '\.(ts|tsx|astro)$'; then
+  echo "Running typecheck (astro check)…"
+  npm run typecheck
+fi

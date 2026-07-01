@@ -3,7 +3,7 @@ project: SpendLens
 version: 1
 status: draft
 created: 2026-05-25
-updated: 2026-06-03
+updated: 2026-07-01
 prd_version: 1
 main_goal: market-feedback
 top_blocker: capacity
@@ -29,10 +29,10 @@ SpendLens helps a goal-saver — someone who has set a concrete savings target (
 
 | ID | Change ID | Outcome (user can …) | Prerequisites | PRD refs | Status |
 |---|---|---|---|---|---|
-| F-01 | data-schema-foundation | (foundation) transactions, savings_goals, categories tables and RLS policies are live in Supabase | — | NFR (data isolation), FR-003, FR-006, FR-007 | ready |
-| S-01 | connect-simulated-bank | connect to the simulated banking API and have categorized transactions land in their account | F-01 | FR-003 | blocked |
+| F-01 | data-schema-foundation | (foundation) transactions, savings_goals, categories tables and RLS policies are live in Supabase | — | NFR (data isolation), FR-003, FR-006, FR-007 | done |
+| S-01 | connect-simulated-bank | connect to the simulated banking API and have categorized transactions land in their account | F-01 | FR-003 | ready |
 | S-04 | create-savings-goal | create up to 3 active savings goals (target amount + timeframe) | F-01 | FR-006, FR-007 | done |
-| S-06 | goal-anchored-recommendations | view ranked expense-cutting suggestions per active goal alongside excessive-spending alerts | S-01, S-04 | US-01, FR-009, FR-010 | blocked |
+| S-06 | goal-anchored-recommendations | view ranked expense-cutting suggestions per active goal alongside excessive-spending alerts | S-01, S-04 | US-01, FR-009, FR-010 | done |
 | S-02 | categorized-dashboard | view a spending summary dashboard with expenses grouped by category | S-01 | FR-004 | proposed |
 | S-03 | transactions-list | view a full transactions list of all imported expenses and incomes | S-01 | FR-005 | proposed |
 | S-05 | delete-savings-goal | delete an existing savings goal | S-04 | FR-008 | proposed |
@@ -73,7 +73,7 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Once user data lands in production, schema changes become migration work. Investing in a clean shape here keeps every downstream slice cheap; under-investing surfaces as recurring data migrations later.
-- **Status:** ready
+- **Status:** done (change-level: `implemented`, 2026-05-27 — migration `20260527000000_data_schema_foundation.sql` + service helpers + `src/types.ts` entities shipped; not yet archived)
 
 ## Slices
 
@@ -86,9 +86,9 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **Parallel with:** S-04
 - **Blockers:** —
 - **Unknowns:**
-  - Category taxonomy — fixed predefined list vs derived from transaction descriptions? Owner: user. Block: yes (see Open Roadmap Q3).
+  - ~~Category taxonomy — fixed predefined list vs derived from transaction descriptions?~~ **Resolved 2026-07-01 (Open Roadmap Q3): fixed predefined taxonomy** — import maps each transaction onto one of the 11 seeded `categories` rows (`Other` fallback), setting `transactions.category_id`.
 - **Risk:** This slice owns both the simulated-API contract and the auto-categorization pipeline — two pieces with separate failure modes. Surface them together so downstream slices can assume "transactions are in and categorized" without re-checking.
-- **Status:** blocked
+- **Status:** ready
 
 ### S-04: Create savings goal (up to 3 active)
 
@@ -111,9 +111,9 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **Parallel with:** S-02, S-03, S-05
 - **Blockers:** —
 - **Unknowns:**
-  - Excessive-spending threshold definition — fixed percentage of income, historical average, or other baseline? Owner: user. Block: yes (see Open Roadmap Q2). FR-010 suggestions could ship without FR-009 alerts in principle, but PRD §FR-009 commentary states alert + action are "neither useful alone" — keep them coupled in this slice.
+  - ~~Excessive-spending threshold definition — fixed percentage of income, historical average, or other baseline?~~ **Resolved 2026-06-24 (PRD Open Question 2): fixed percentage of monthly income** — `threshold = floor(monthly_income × 0.12)`, alert when `category_spend > threshold` (strict); no alerts when income is 0. FR-009 + FR-010 kept coupled in this slice per PRD §FR-009.
 - **Risk:** This is the wedge. If the suggestions feel wrong (math, ranking, or category attribution), the entire product hypothesis takes the hit. Plan a verification path that sanity-checks the calculation against a hand-worked example before this ships.
-- **Status:** blocked
+- **Status:** done (change-level: `impl_reviewed`, 2026-05-28 — recommendations page/service/panel built and review-approved; pending `/10x-archive`. ⚠ Exercised only on seeded transactions until S-01 lands the real import.)
 
 ### S-02: Categorized spending dashboard
 
@@ -168,10 +168,10 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
 |---|---|---|---|---|
-| F-01 | data-schema-foundation | Data schema: transactions, savings_goals, categories + RLS | yes | Run `/10x-plan data-schema-foundation` |
-| S-01 | connect-simulated-bank | Connect simulated bank API and auto-categorize imported transactions | no | Unblock by resolving Open Roadmap Q3 (category taxonomy); also gated by F-01 |
+| F-01 | data-schema-foundation | Data schema: transactions, savings_goals, categories + RLS | done | Implemented 2026-05-27 (migration + services + types shipped); not yet archived |
+| S-01 | connect-simulated-bank | Connect simulated bank API and auto-categorize imported transactions | yes | Unblocked — Q3 resolved (fixed taxonomy) and F-01 implemented. Run `/10x-new connect-simulated-bank` → `/10x-plan connect-simulated-bank` |
 | S-04 | create-savings-goal | Create up to 3 active savings goals | no | Gated by F-01; run `/10x-plan create-savings-goal` once F-01 is done |
-| S-06 | goal-anchored-recommendations | Per-goal recommendations + excessive-spending alerts (north star) | no | Unblock by resolving Open Roadmap Q2 (excessive-spending threshold); also gated by S-01 + S-04 |
+| S-06 | goal-anchored-recommendations | Per-goal recommendations + excessive-spending alerts (north star) | done | Built & review-approved (`impl_reviewed`), Q2 resolved; pending `/10x-archive`. Real reachability still needs S-01 (import). |
 | S-02 | categorized-dashboard | Categorized spending dashboard | no | Gated by S-01; run `/10x-plan categorized-dashboard` once S-01 is done |
 | S-03 | transactions-list | Full transactions list with categories | no | Gated by S-01; run `/10x-plan transactions-list` once S-01 is done |
 | S-05 | delete-savings-goal | Delete savings goal | no | Gated by S-04; run `/10x-plan delete-savings-goal` once S-04 is done |
@@ -181,7 +181,9 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 
 1. **Export format for FR-011** — which format should categorized transaction export use: CSV, PDF, or JSON? Owner: user. Block: S-07. (Copied verbatim from PRD §Open Questions.)
 2. **Excessive-spending threshold definition** — what baseline defines "disproportionately high" spending in a category? Fixed percentages of income? Historical average? Owner: user. Block: S-06. (Copied verbatim from PRD §Open Questions.)
+   > **Resolved (2026-06-24):** Fixed percentage of monthly income — a category is disproportionate when its 30-day spend exceeds `threshold = floor(monthly_income × 0.12)` (strict `>`); no alerts when income is 0. Chosen over a historical-average baseline because the simulated banking API does not guarantee multi-period history. This is the FR-009 spec; see PRD §Open Questions 2 and test-plan Risk #4.
 3. **Category taxonomy** — predefined fixed category list (groceries, dining, transport, …) vs derived from transaction descriptions? Owner: user/dev. Block: S-01 (and S-02 / S-06 transitively, since both reference categories).
+   > **Resolved (2026-07-01):** Fixed predefined taxonomy. The category set is the 11 seeded rows in the `categories` table (Groceries, Dining, Transport, Housing, Utilities, Entertainment, Healthcare, Shopping, Travel, Salary, Other) — already shipped and RLS-tested by F-01 (`data-schema-foundation`), with `transactions.category_id` a foreign key to `categories(id)`. Derived-from-description categories were rejected: they would break the FK model, make the category set non-deterministic (undermining the wedge math's per-category ranking and the fixed 12%-of-income alert threshold — both aggregate by a stable category), and require dynamic category creation at import time. Consequence for S-01: the import pipeline **maps** each imported transaction onto one of the 11 fixed categories (setting `category_id`), with `Other` as the fallback for anything unmatched — the mapping heuristic is an S-01 implementation detail, not a taxonomy question.
 
 ## Parked
 
@@ -196,3 +198,4 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 ## Done
 
 - **S-04: A signed-in user creates a savings goal by entering a target amount and a timeframe; the goal is persisted under their account; the user is prevented from creating a fourth active goal.** — Archived 2026-06-03 → `context/archive/2026-06-02-create-savings-goal/`. Lesson: —.
+- **S-06: A signed-in user with imported transactions and at least one active savings goal navigates to the recommendations section and sees, per active goal, a ranked list of expense-cutting suggestions (category + estimated saving amount, mathematically tied to the goal's target and timeframe), alongside excessive-spending alerts for categories above the income-relative threshold.** — Archived 2026-07-01 → `context/archive/2026-05-27-goal-anchored-recommendations/`. Lesson: —.

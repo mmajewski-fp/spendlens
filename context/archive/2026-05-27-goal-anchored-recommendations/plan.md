@@ -401,5 +401,5 @@ No new migrations required — this slice is read-only against the schema establ
 
 #### Manual
 
-- [ ] 4.3 "Recommendations" link visible in top navigation on dashboard and recommendations page
-- [ ] 4.4 Clicking the link navigates to `/recommendations`
+- [x] 4.3 "Recommendations" link visible in top navigation on dashboard and recommendations page — 36ed471
+- [x] 4.4 Clicking the link navigates to `/recommendations` — 36ed471
