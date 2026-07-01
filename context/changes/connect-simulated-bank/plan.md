@@ -301,30 +301,30 @@ None — no schema changes. Imported rows are ordinary `transactions` rows remov
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx astro check`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Unit + hermetic tests pass: `npm run test`
+- [x] 2.1 Type checking passes: `npx astro check` — 69a7c54
+- [x] 2.2 Linting passes: `npm run lint` — 69a7c54
+- [x] 2.3 Unit + hermetic tests pass: `npm run test` — 69a7c54
 
 #### Manual
 
-- [x] 2.4 `POST /api/transactions/import` while signed in returns `{ imported: N }`
+- [x] 2.4 `POST /api/transactions/import` while signed in returns `{ imported: N }` — 69a7c54
 
 ### Phase 3: SSR page + island + entry points
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx astro check`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Build passes: `npm run build`
-- [ ] 3.4 Tests pass: `npm run test`
+- [x] 3.1 Type checking passes: `npx astro check`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Build passes: `npm run build`
+- [x] 3.4 Tests pass: `npm run test`
 
 #### Manual
 
-- [ ] 3.5 Unauthenticated visit to `/transactions/import` redirects to sign-in
-- [ ] 3.6 Dashboard button and recommendations CTA both navigate to `/transactions/import`
-- [ ] 3.7 "Connect Bank" imports data and shows "Imported N transactions" with a working onward link
-- [ ] 3.8 Re-clicking shows "0 new — already imported"
-- [ ] 3.9 After import, `/dashboard` and `/recommendations` render real per-user data
+- [x] 3.5 Unauthenticated visit to `/transactions/import` redirects to sign-in
+- [x] 3.6 Dashboard button and recommendations CTA both navigate to `/transactions/import`
+- [x] 3.7 "Connect Bank" imports data and shows "Imported N transactions" with a working onward link
+- [x] 3.8 Re-clicking shows "0 new — already imported"
+- [x] 3.9 After import, `/dashboard` and `/recommendations` render real per-user data
 
 ### Phase 4: Integration tests (real Supabase, ad-hoc)
 

@@ -1,0 +1,32 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Topbar from "@/components/Topbar.astro";
+import ImportPanel from "@/components/transactions/ImportPanel";
+import { createClient } from "@/lib/supabase";
+
+// No frontmatter data fetch — the import runs on click via the API route. We
+// only surface a config error if the Supabase client can't be built.
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const configError = !supabase;
+---
+
+<Layout title="Connect Bank — SpendLens">
+  <div class="bg-cosmic flex min-h-screen flex-col items-center p-4 pt-12">
+    <div class="w-full max-w-3xl">
+      <Topbar />
+      <h1 class="mb-8 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+        Connect Bank
+      </h1>
+
+      {
+        configError ? (
+          <div class="rounded-2xl border border-red-400/30 bg-red-500/10 p-8 text-center text-white backdrop-blur-xl">
+            <p class="text-sm text-red-200">Database is not configured. Please check your environment variables.</p>
+          </div>
+        ) : (
+          <ImportPanel client:load />
+        )
+      }
+    </div>
+  </div>
+</Layout>
