@@ -1,10 +1,10 @@
 ---
 change_id: categorized-dashboard
 title: Categorized dashboard
-status: impl_reviewed
+status: archived
 created: 2026-07-02
 updated: 2026-07-02
-archived_at: null
+archived_at: 2026-07-02T10:57:42Z
 ---
 
 ## Notes
