@@ -208,28 +208,28 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 New aggregation tests pass: `npx vitest run src/lib/services/spending-summary.test.ts`
-- [x] 1.4 Existing recommendations tests stay green: `npx vitest run src/lib/services/recommendations.test.ts`
-- [x] 1.5 Full unit suite passes: `npx vitest run`
+- [x] 1.1 Type checking passes: `npm run build` — 62eb7c8
+- [x] 1.2 Linting passes: `npm run lint` — 62eb7c8
+- [x] 1.3 New aggregation tests pass: `npx vitest run src/lib/services/spending-summary.test.ts` — 62eb7c8
+- [x] 1.4 Existing recommendations tests stay green: `npx vitest run src/lib/services/recommendations.test.ts` — 62eb7c8
+- [x] 1.5 Full unit suite passes: `npx vitest run` — 62eb7c8
 
 #### Manual
 
-- [x] 1.6 `summarizeByCategory` bucket ordering matches pre-refactor `sortedBuckets` on a representative set
+- [x] 1.6 `summarizeByCategory` bucket ordering matches pre-refactor `sortedBuckets` on a representative set — 62eb7c8
 
 ### Phase 2: Dashboard page + spending-summary island
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npm run build`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Island render test passes: `npx vitest run src/components/SpendingSummary.test.tsx`
-- [ ] 2.4 Full unit suite passes: `npx vitest run`
+- [x] 2.1 Type checking passes: `npm run build`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Island render test passes: `npx vitest run src/components/SpendingSummary.test.ts`
+- [x] 2.4 Full unit suite passes: `npx vitest run`
 
 #### Manual
 
-- [ ] 2.5 `/dashboard` shows ranked category list with correct totals, percentages, proportional bars, sorted desc
-- [ ] 2.6 No-transactions empty state renders with working Connect-bank link
-- [ ] 2.7 `configError` / `fetchError` cards render; no blank 500 page
-- [ ] 2.8 `Topbar` renders with working links; page paints within ~2s, no blank screen for a user with data
+- [x] 2.5 `/dashboard` shows ranked category list with correct totals, percentages, proportional bars, sorted desc
+- [x] 2.6 No-transactions empty state renders with working Connect-bank link
+- [x] 2.7 `configError` / `fetchError` cards render; no blank 500 page
+- [x] 2.8 `Topbar` renders with working links; page paints within ~2s, no blank screen for a user with data
