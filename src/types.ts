@@ -75,3 +75,17 @@ export interface RecommendationsResult {
   /** Same order as getUserGoals() (created_at ASC). */
   goals: GoalRecommendation[];
 }
+
+export interface CategorySpend {
+  categoryName: string;
+  categorySlug: string;
+  /** Total spend for the category in the period, integer cents. */
+  totalCents: number;
+}
+
+export interface SpendingSummary {
+  /** Sum of all category totals in the period, integer cents. */
+  totalExpensesCents: number;
+  /** Ranked by spend desc; percent is share of totalExpensesCents (0 when total is 0). */
+  categories: (CategorySpend & { percent: number })[];
+}
