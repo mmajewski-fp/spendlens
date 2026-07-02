@@ -17,8 +17,11 @@ let fetchError: string | null = null;
 if (supabase) {
   try {
     const now = new Date();
-    // First of the current calendar month (server runs in UTC on Vercel).
-    const since = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+    // First of the current calendar month. Built from the same (local) calendar
+    // components computeSpendingSummary uses for its window, so the DB lower-bound
+    // and the in-service filter always agree — no local→UTC round-trip that could
+    // shift the month on a non-UTC host (lessons.md: no ambient-timezone reliance).
+    const since = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
     const transactions = await getUserTransactions(supabase, since);
     hasTransactions = transactions.length > 0;
     summary = computeSpendingSummary(transactions, now);
