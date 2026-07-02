@@ -222,14 +222,14 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npm run build`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Island render test passes: `npx vitest run src/components/SpendingSummary.test.ts`
-- [x] 2.4 Full unit suite passes: `npx vitest run`
+- [x] 2.1 Type checking passes: `npm run build` — 845d019
+- [x] 2.2 Linting passes: `npm run lint` — 845d019
+- [x] 2.3 Island render test passes: `npx vitest run src/components/SpendingSummary.test.ts` — 845d019
+- [x] 2.4 Full unit suite passes: `npx vitest run` — 845d019
 
 #### Manual
 
-- [x] 2.5 `/dashboard` shows ranked category list with correct totals, percentages, proportional bars, sorted desc
-- [x] 2.6 No-transactions empty state renders with working Connect-bank link
-- [x] 2.7 `configError` / `fetchError` cards render; no blank 500 page
-- [x] 2.8 `Topbar` renders with working links; page paints within ~2s, no blank screen for a user with data
+- [x] 2.5 `/dashboard` shows ranked category list with correct totals, percentages, proportional bars, sorted desc — 845d019
+- [x] 2.6 No-transactions empty state renders with working Connect-bank link — 845d019
+- [x] 2.7 `configError` / `fetchError` cards render; no blank 500 page — 845d019
+- [x] 2.8 `Topbar` renders with working links; page paints within ~2s, no blank screen for a user with data — 845d019
