@@ -35,7 +35,7 @@ SpendLens helps a goal-saver — someone who has set a concrete savings target (
 | S-06 | goal-anchored-recommendations | view ranked expense-cutting suggestions per active goal alongside excessive-spending alerts | S-01, S-04 | US-01, FR-009, FR-010 | done |
 | S-02 | categorized-dashboard | view a spending summary dashboard with expenses grouped by category | S-01 | FR-004 | done |
 | S-03 | transactions-list | view a full transactions list of all imported expenses and incomes | S-01 | FR-005 | done |
-| S-05 | delete-savings-goal | delete an existing savings goal | S-04 | FR-008 | proposed |
+| S-05 | delete-savings-goal | delete an existing savings goal | S-04 | FR-008 | done |
 | S-07 | export-transactions | export categorized transactions to a downloadable file | S-01 | FR-011 | blocked |
 
 ## Streams
@@ -149,7 +149,7 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Deletion may leave dangling references in already-shown recommendations (S-06). Decide whether deleted goals invalidate prior suggestion lists or whether recommendations are recomputed on each view.
-- **Status:** proposed
+- **Status:** done
 
 ### S-07: Export categorized transactions
 
@@ -202,3 +202,4 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **S-01: A signed-in user triggers "Connect Bank" from the dashboard, the simulated banking API returns transactions seeded against the user's account, and the import pipeline persists them under the user with auto-assigned categories. The user sees confirmation that data has landed (count or basic preview).** — Archived 2026-07-01 → `context/archive/2026-07-01-connect-simulated-bank/`. Lesson: —.
 - **S-02: A signed-in user with imported transactions sees a dashboard view summarizing total spending grouped by category (totals + percentages) for the current period.** — Archived 2026-07-02 → `context/archive/2026-07-02-categorized-dashboard/`. Lesson: —.
 - **S-03: A signed-in user with imported transactions can browse a full list of expenses and incomes from connected accounts, each row showing its assigned category.** — Archived 2026-07-03 → `context/archive/2026-07-02-transactions-list/`. Lesson: —.
+- **S-05: A signed-in user can delete one of their existing savings goals; the goal disappears from the goal list and from any recommendations that referenced it.** — Archived 2026-07-03 → `context/archive/2026-07-03-delete-savings-goal/`. Lesson: —.
