@@ -1,7 +1,7 @@
 ---
 change_id: transactions-list
 title: Transactions list
-status: implementing
+status: implemented
 created: 2026-07-02
 updated: 2026-07-03
 archived_at: null

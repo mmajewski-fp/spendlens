@@ -150,15 +150,15 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 1.1 Type checking / build passes: `npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Helper unit tests pass: `npx vitest run src/lib/format-money.test.ts`
-- [x] 1.4 Full unit suite passes: `npx vitest run`
+- [x] 1.1 Type checking / build passes: `npm run build` — 79dc18b
+- [x] 1.2 Linting passes: `npm run lint` — 79dc18b
+- [x] 1.3 Helper unit tests pass: `npx vitest run src/lib/format-money.test.ts` — 79dc18b
+- [x] 1.4 Full unit suite passes: `npx vitest run` — 79dc18b
 
 #### Manual
 
-- [x] 1.5 `/transactions` shows all transactions newest-first as cards with date, description, category badge, and correctly signed/colored amount; count matches
-- [x] 1.6 Uncategorized transactions show an "Other" badge
-- [x] 1.7 No-transactions empty state renders with working Connect-bank link
-- [x] 1.8 `configError` / `fetchError` cards render; no blank 500 page
-- [x] 1.9 `Topbar` Transactions link works; unauthenticated `/transactions` redirects to sign-in
+- [x] 1.5 `/transactions` shows all transactions newest-first as cards with date, description, category badge, and correctly signed/colored amount; count matches — 79dc18b
+- [x] 1.6 Uncategorized transactions show an "Other" badge — 79dc18b
+- [x] 1.7 No-transactions empty state renders with working Connect-bank link — 79dc18b
+- [x] 1.8 `configError` / `fetchError` cards render; no blank 500 page — 79dc18b
+- [x] 1.9 `Topbar` Transactions link works; unauthenticated `/transactions` redirects to sign-in — 79dc18b
