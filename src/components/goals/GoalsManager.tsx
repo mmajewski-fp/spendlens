@@ -4,13 +4,10 @@ import type { SavingsGoal } from "@/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/auth/FormField";
+import { formatCents } from "@/lib/format-money";
 
 interface Props {
   initialGoals: SavingsGoal[];
-}
-
-function formatDollarsFromCents(cents: number): string {
-  return (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
 function getTomorrowDateString(): string {
@@ -112,7 +109,7 @@ export default function GoalsManager({ initialGoals }: Props) {
               <li key={goal.id} className="rounded-xl border border-white/10 bg-white/5 px-4 py-4">
                 <p className="mb-2 font-medium text-white">{goal.name}</p>
                 <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-blue-100/80">
-                  <span>Target: {formatDollarsFromCents(goal.target_amount)}</span>
+                  <span>Target: {formatCents(goal.target_amount)}</span>
                   <span>By: {goal.target_date}</span>
                   <span>{getMonthsRemainingLabel(goal.target_date)}</span>
                 </div>

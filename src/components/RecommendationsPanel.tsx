@@ -1,13 +1,10 @@
 import { useState } from "react";
 import type { GoalRecommendation, RecommendationsResult, SpendingAlert, Suggestion } from "@/types";
 import { cn } from "@/lib/utils";
+import { formatCents } from "@/lib/format-money";
 
 interface Props {
   result: RecommendationsResult;
-}
-
-function formatCents(cents: number): string {
-  return (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
 function AlertCard({ alert }: { alert: SpendingAlert }) {

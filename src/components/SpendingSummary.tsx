@@ -1,11 +1,8 @@
 import type { SpendingSummary as SpendingSummaryData } from "@/types";
+import { formatCents } from "@/lib/format-money";
 
 interface Props {
   summary: SpendingSummaryData;
-}
-
-function formatCents(cents: number): string {
-  return (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
 }
 
 export default function SpendingSummary({ summary }: Props) {
