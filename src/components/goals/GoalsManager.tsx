@@ -37,9 +37,32 @@ export default function GoalsManager({ initialGoals }: Props) {
   const [targetDate, setTargetDate] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const minTargetDate = useMemo(() => getTomorrowDateString(), []);
   const atGoalCap = goals.length >= 3;
+
+  async function handleDelete(goal: SavingsGoal) {
+    if (deletingId) return;
+    if (!window.confirm(`Delete "${goal.name}"?`)) return;
+
+    setError(null);
+    setDeletingId(goal.id);
+
+    try {
+      const response = await fetch(`/api/goals/${goal.id}`, { method: "DELETE" });
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => ({}))) as { error?: string };
+        setError(payload.error ?? "Failed to delete goal");
+        return;
+      }
+      setGoals((current) => current.filter((g) => g.id !== goal.id));
+    } catch {
+      setError("Failed to delete goal. Please try again.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -106,13 +129,26 @@ export default function GoalsManager({ initialGoals }: Props) {
         ) : (
           <ul className="space-y-3">
             {goals.map((goal) => (
-              <li key={goal.id} className="rounded-xl border border-white/10 bg-white/5 px-4 py-4">
-                <p className="mb-2 font-medium text-white">{goal.name}</p>
-                <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-blue-100/80">
-                  <span>Target: {formatCents(goal.target_amount)}</span>
-                  <span>By: {goal.target_date}</span>
-                  <span>{getMonthsRemainingLabel(goal.target_date)}</span>
+              <li
+                key={goal.id}
+                className="flex items-start justify-between gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-4"
+              >
+                <div className="min-w-0">
+                  <p className="mb-2 font-medium text-white">{goal.name}</p>
+                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-blue-100/80">
+                    <span>Target: {formatCents(goal.target_amount)}</span>
+                    <span>By: {goal.target_date}</span>
+                    <span>{getMonthsRemainingLabel(goal.target_date)}</span>
+                  </div>
                 </div>
+                <Button
+                  type="button"
+                  onClick={() => void handleDelete(goal)}
+                  disabled={deletingId === goal.id}
+                  className="shrink-0 border border-rose-400/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20"
+                >
+                  {deletingId === goal.id ? "Deleting…" : "Delete"}
+                </Button>
               </li>
             ))}
           </ul>
