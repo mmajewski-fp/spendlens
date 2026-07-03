@@ -1,10 +1,10 @@
 ---
 change_id: transactions-list
 title: Transactions list
-status: impl_reviewed
+status: archived
 created: 2026-07-02
 updated: 2026-07-03
-archived_at: null
+archived_at: 2026-07-03T07:51:20Z
 ---
 
 ## Notes
