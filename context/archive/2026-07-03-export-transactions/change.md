@@ -1,10 +1,10 @@
 ---
 change_id: export-transactions
 title: Export transactions
-status: impl_reviewed
+status: archived
 created: 2026-07-03
 updated: 2026-07-03
-archived_at: null
+archived_at: 2026-07-03T13:47:49Z
 ---
 
 ## Notes

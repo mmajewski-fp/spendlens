@@ -36,7 +36,7 @@ SpendLens helps a goal-saver — someone who has set a concrete savings target (
 | S-02 | categorized-dashboard | view a spending summary dashboard with expenses grouped by category | S-01 | FR-004 | done |
 | S-03 | transactions-list | view a full transactions list of all imported expenses and incomes | S-01 | FR-005 | done |
 | S-05 | delete-savings-goal | delete an existing savings goal | S-04 | FR-008 | done |
-| S-07 | export-transactions | export categorized transactions to a downloadable file | S-01 | FR-011 | proposed |
+| S-07 | export-transactions | export categorized transactions to a downloadable file | S-01 | FR-011 | done |
 
 ## Streams
 
@@ -162,7 +162,7 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **Unknowns:**
   - ~~Export format — CSV, PDF, or JSON?~~ **Resolved 2026-07-03 (Open Roadmap Q1): CSV** — `text/csv` download (date, description, category, type, amount); zero-dep pure serializer, guard formula injection + escaping, amounts as decimal dollars from integer cents.
 - **Risk:** PRD marks this nice-to-have; the format decision is the only thing holding it from being implementable. If capacity stays tight, this is the easiest slice to defer to v2.
-- **Status:** proposed
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -204,3 +204,4 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **S-02: A signed-in user with imported transactions sees a dashboard view summarizing total spending grouped by category (totals + percentages) for the current period.** — Archived 2026-07-02 → `context/archive/2026-07-02-categorized-dashboard/`. Lesson: —.
 - **S-03: A signed-in user with imported transactions can browse a full list of expenses and incomes from connected accounts, each row showing its assigned category.** — Archived 2026-07-03 → `context/archive/2026-07-02-transactions-list/`. Lesson: —.
 - **S-05: A signed-in user can delete one of their existing savings goals; the goal disappears from the goal list and from any recommendations that referenced it.** — Archived 2026-07-03 → `context/archive/2026-07-03-delete-savings-goal/`. Lesson: —.
+- **S-07: A signed-in user with imported transactions can export their categorized transactions to a downloadable file.** — Archived 2026-07-03 → `context/archive/2026-07-03-export-transactions/`. Lesson: —.
