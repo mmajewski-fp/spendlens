@@ -136,15 +136,15 @@ None — service, RLS, and schema already support delete.
 
 #### Automated
 
-- [x] 1.1 Type checking / build passes: `npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Delete-handler tests pass: `npx vitest run src/pages/api/goals/[id].test.ts`
-- [x] 1.4 Full unit suite passes: `npx vitest run`
+- [x] 1.1 Type checking / build passes: `npm run build` — b115b04
+- [x] 1.2 Linting passes: `npm run lint` — b115b04
+- [x] 1.3 Delete-handler tests pass: `npx vitest run src/pages/api/goals/[id].test.ts` — b115b04
+- [x] 1.4 Full unit suite passes: `npx vitest run` — b115b04
 
 #### Manual
 
-- [x] 1.5 Each goal shows a Delete button; confirming removes it from the list
-- [x] 1.6 Cancelling the confirm() dialog leaves the goal in place
-- [x] 1.7 Deleting below 3 goals re-enables the create form (cap message clears)
-- [x] 1.8 A failed delete keeps the goal and shows an inline error
-- [x] 1.9 Unauthenticated DELETE /api/goals/<id> returns 401
+- [x] 1.5 Each goal shows a Delete button; confirming removes it from the list — b115b04
+- [x] 1.6 Cancelling the confirm() dialog leaves the goal in place — b115b04
+- [x] 1.7 Deleting below 3 goals re-enables the create form (cap message clears) — b115b04
+- [x] 1.8 A failed delete keeps the goal and shows an inline error — b115b04
+- [x] 1.9 Unauthenticated DELETE /api/goals/<id> returns 401 — b115b04
