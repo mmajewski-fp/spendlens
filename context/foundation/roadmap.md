@@ -36,7 +36,7 @@ SpendLens helps a goal-saver — someone who has set a concrete savings target (
 | S-02 | categorized-dashboard | view a spending summary dashboard with expenses grouped by category | S-01 | FR-004 | done |
 | S-03 | transactions-list | view a full transactions list of all imported expenses and incomes | S-01 | FR-005 | done |
 | S-05 | delete-savings-goal | delete an existing savings goal | S-04 | FR-008 | done |
-| S-07 | export-transactions | export categorized transactions to a downloadable file | S-01 | FR-011 | blocked |
+| S-07 | export-transactions | export categorized transactions to a downloadable file | S-01 | FR-011 | proposed |
 
 ## Streams
 
@@ -47,7 +47,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | A | Wedge & validation | `F-01` → `S-01` → `S-04` → `S-06` | Backbone of the `market-feedback` main goal. `S-04` is parallel with `S-01` (both depend only on `F-01`); the chain shows the read order, not a strict sequential gate. |
 | B | Spending visibility | `S-02` / `S-03` | Joins Stream A at `S-01`. Two read-only views — pick up in parallel with `S-06` once `S-01` lands. |
 | C | Goal management | `S-05` | Joins Stream A at `S-04`. Small lifecycle enhancement; useful once at least one goal exists. |
-| D | Export (gated) | `S-07` | Joins Stream A at `S-01`. Stays `blocked` until Open Roadmap Q1 (export format) resolves. |
+| D | Export | `S-07` | Joins Stream A at `S-01`. Unblocked — Open Roadmap Q1 resolved (CSV, 2026-07-03). |
 
 ## Baseline
 
@@ -160,9 +160,9 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **Parallel with:** S-02, S-03, S-06
 - **Blockers:** —
 - **Unknowns:**
-  - Export format — CSV, PDF, or JSON? Owner: user. Block: yes (see Open Roadmap Q1).
+  - ~~Export format — CSV, PDF, or JSON?~~ **Resolved 2026-07-03 (Open Roadmap Q1): CSV** — `text/csv` download (date, description, category, type, amount); zero-dep pure serializer, guard formula injection + escaping, amounts as decimal dollars from integer cents.
 - **Risk:** PRD marks this nice-to-have; the format decision is the only thing holding it from being implementable. If capacity stays tight, this is the easiest slice to defer to v2.
-- **Status:** blocked
+- **Status:** proposed
 
 ## Backlog Handoff
 
@@ -175,11 +175,12 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 | S-02 | categorized-dashboard | Categorized spending dashboard | no | Gated by S-01; run `/10x-plan categorized-dashboard` once S-01 is done |
 | S-03 | transactions-list | Full transactions list with categories | no | Gated by S-01; run `/10x-plan transactions-list` once S-01 is done |
 | S-05 | delete-savings-goal | Delete savings goal | no | Gated by S-04; run `/10x-plan delete-savings-goal` once S-04 is done |
-| S-07 | export-transactions | Export categorized transactions | no | Unblock by resolving Open Roadmap Q1 (export format); also gated by S-01 |
+| S-07 | export-transactions | Export categorized transactions (CSV) | yes | Unblocked — Q1 resolved (CSV) and S-01 done. Run `/10x-new export-transactions` → `/10x-plan export-transactions` |
 
 ## Open Roadmap Questions
 
 1. **Export format for FR-011** — which format should categorized transaction export use: CSV, PDF, or JSON? Owner: user. Block: S-07. (Copied verbatim from PRD §Open Questions.)
+   > **Resolved (2026-07-03):** CSV. Categorized transactions export as a `text/csv` download (columns: date, description, category, type, amount). Chosen over JSON (low end-user value — the raw API shape, not spreadsheet-openable) and PDF (a presentation/report format, not data portability; needs a heavy PDF lib that is awkward on Vercel serverless). CSV is zero-dependency (a pure serializer, unit-testable like the existing `format-money`/`spending-summary` helpers), serverless-friendly, and matches the "take my data into a spreadsheet/accountant" intent. Implementation note for S-07: guard CSV/formula injection (prefix fields starting with `= + - @`) and quote/comma-escape; amounts render as decimal dollars from the stored integer cents. JSON stays a trivial future add-on if a dev/re-import need ever appears.
 2. **Excessive-spending threshold definition** — what baseline defines "disproportionately high" spending in a category? Fixed percentages of income? Historical average? Owner: user. Block: S-06. (Copied verbatim from PRD §Open Questions.)
    > **Resolved (2026-06-24):** Fixed percentage of monthly income — a category is disproportionate when its 30-day spend exceeds `threshold = floor(monthly_income × 0.12)` (strict `>`); no alerts when income is 0. Chosen over a historical-average baseline because the simulated banking API does not guarantee multi-period history. This is the FR-009 spec; see PRD §Open Questions 2 and test-plan Risk #4.
 3. **Category taxonomy** — predefined fixed category list (groceries, dining, transport, …) vs derived from transaction descriptions? Owner: user/dev. Block: S-01 (and S-02 / S-06 transitively, since both reference categories).
