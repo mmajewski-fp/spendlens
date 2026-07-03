@@ -1,15 +1,9 @@
 import type { APIRoute } from "astro";
 import { deleteGoal } from "@/lib/services/savings-goals";
 import { createClient } from "@/lib/supabase";
+import { jsonResponse } from "@/lib/api";
 
 export const prerender = false;
-
-function jsonResponse(payload: unknown, status: number): Response {
-  return new Response(JSON.stringify(payload), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}
 
 export const DELETE: APIRoute = async (context) => {
   if (!context.locals.user) {

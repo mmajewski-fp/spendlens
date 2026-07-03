@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { createGoal } from "@/lib/services/savings-goals";
 import { createClient } from "@/lib/supabase";
+import { jsonResponse } from "@/lib/api";
 import type { SavingsGoal } from "@/types";
 
 export const prerender = false;
@@ -22,13 +23,6 @@ const createGoalSchema = z.object({
       return parsed.getTime() > today.getTime();
     }, "Target date must be in the future"),
 });
-
-function jsonResponse(payload: unknown, status: number): Response {
-  return new Response(JSON.stringify(payload), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}
 
 export const POST: APIRoute = async (context) => {
   if (!context.locals.user) {

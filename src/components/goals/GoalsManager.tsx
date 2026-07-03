@@ -144,7 +144,7 @@ export default function GoalsManager({ initialGoals }: Props) {
                 <Button
                   type="button"
                   onClick={() => void handleDelete(goal)}
-                  disabled={deletingId === goal.id}
+                  disabled={deletingId !== null}
                   className="shrink-0 border border-rose-400/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20"
                 >
                   {deletingId === goal.id ? "Deleting…" : "Delete"}

@@ -1,7 +1,7 @@
 ---
 change_id: delete-savings-goal
 title: Delete savings goal
-status: implemented
+status: impl_reviewed
 created: 2026-07-03
 updated: 2026-07-03
 archived_at: null
