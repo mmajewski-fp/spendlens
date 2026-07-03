@@ -35,9 +35,18 @@ if (supabase) {
 
       {
         hasTransactions && (
-          <p class="mb-8 text-sm text-blue-100/60">
-            Showing {transactions.length} transaction{transactions.length === 1 ? "" : "s"}
-          </p>
+          <div class="mb-8 flex items-center justify-between gap-4">
+            <p class="text-sm text-blue-100/60">
+              Showing {transactions.length} transaction{transactions.length === 1 ? "" : "s"}
+            </p>
+            <a
+              href="/api/transactions/export"
+              download
+              class="shrink-0 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20"
+            >
+              Export CSV
+            </a>
+          </div>
         )
       }
 
