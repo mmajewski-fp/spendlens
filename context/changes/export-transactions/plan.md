@@ -147,15 +147,15 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 1.1 Type checking / build passes: `npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Serializer + endpoint tests pass: `npx vitest run src/lib/transactions-csv.test.ts src/pages/api/transactions/export.test.ts`
-- [x] 1.4 Full unit suite passes: `npx vitest run`
+- [x] 1.1 Type checking / build passes: `npm run build` — 1f399e5
+- [x] 1.2 Linting passes: `npm run lint` — 1f399e5
+- [x] 1.3 Serializer + endpoint tests pass: `npx vitest run src/lib/transactions-csv.test.ts src/pages/api/transactions/export.test.ts` — 1f399e5
+- [x] 1.4 Full unit suite passes: `npx vitest run` — 1f399e5
 
 #### Manual
 
-- [x] 1.5 Export CSV link downloads `spendlens-transactions-<today>.csv` from `/transactions`
-- [x] 1.6 File opens cleanly in a spreadsheet: header + one row per transaction, decimal amounts, category + type per row
-- [x] 1.7 Tricky description (comma/quote/leading `=`) is escaped and injection-guarded
-- [x] 1.8 No-transactions user gets a header-only CSV (or no link per empty state)
-- [x] 1.9 Unauthenticated `GET /api/transactions/export` returns 401
+- [x] 1.5 Export CSV link downloads `spendlens-transactions-<today>.csv` from `/transactions` — 1f399e5
+- [x] 1.6 File opens cleanly in a spreadsheet: header + one row per transaction, decimal amounts, category + type per row — 1f399e5
+- [x] 1.7 Tricky description (comma/quote/leading `=`) is escaped and injection-guarded — 1f399e5
+- [x] 1.8 No-transactions user gets a header-only CSV (or no link per empty state) — 1f399e5
+- [x] 1.9 Unauthenticated `GET /api/transactions/export` returns 401 — 1f399e5
