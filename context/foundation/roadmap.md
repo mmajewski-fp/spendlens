@@ -37,6 +37,7 @@ SpendLens helps a goal-saver — someone who has set a concrete savings target (
 | S-03 | transactions-list | view a full transactions list of all imported expenses and incomes | S-01 | FR-005 | done |
 | S-05 | delete-savings-goal | delete an existing savings goal | S-04 | FR-008 | done |
 | S-07 | export-transactions | export categorized transactions to a downloadable file | S-01 | FR-011 | done |
+| S-08 | edit-savings-goal | edit an existing savings goal (name, target amount, timeframe) | S-04 | FR-008 | done |
 
 ## Streams
 
@@ -46,7 +47,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 |---|---|---|---|
 | A | Wedge & validation | `F-01` → `S-01` → `S-04` → `S-06` | Backbone of the `market-feedback` main goal. `S-04` is parallel with `S-01` (both depend only on `F-01`); the chain shows the read order, not a strict sequential gate. |
 | B | Spending visibility | `S-02` / `S-03` | Joins Stream A at `S-01`. Two read-only views — pick up in parallel with `S-06` once `S-01` lands. |
-| C | Goal management | `S-05` | Joins Stream A at `S-04`. Small lifecycle enhancement; useful once at least one goal exists. |
+| C | Goal management | `S-05` / `S-08` | Joins Stream A at `S-04`. Goal-lifecycle enhancements (delete, edit); useful once at least one goal exists. |
 | D | Export | `S-07` | Joins Stream A at `S-01`. Unblocked — Open Roadmap Q1 resolved (CSV, 2026-07-03). |
 
 ## Baseline
@@ -164,6 +165,18 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **Risk:** PRD marks this nice-to-have; the format decision is the only thing holding it from being implementable. If capacity stays tight, this is the easiest slice to defer to v2.
 - **Status:** done
 
+### S-08: Edit savings goal
+
+- **Outcome:** A signed-in user can edit one of their existing savings goals — changing its name, target amount, or timeframe — from the goals page; the change persists under their account and flows into the next recommendations computation.
+- **Change ID:** edit-savings-goal
+- **PRD refs:** FR-008
+- **Prerequisites:** S-04
+- **Parallel with:** S-05
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** The v2-backlog "recalculation complexity" concern is moot — recommendations are computed live per request, so an edited goal flows in exactly like a deleted one. The real risks are validation parity (server must enforce constraints the UI shows) and per-user isolation on the new UPDATE path (proven by an integration test).
+- **Status:** done (change-level: `implemented`, 2026-07-06 — service `updateGoal`/`getGoalById` + `PUT /api/goals/[id]` + inline edit UI + hermetic and integration tests shipped; not yet archived)
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID | Suggested issue title | Ready for `/10x-plan` | Notes |
@@ -192,7 +205,6 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **OAuth login (Google, Apple, …)** — Why parked: PRD §Non-Goals — email + password only for MVP; OAuth → v2.
 - **Shared / household savings goals** — Why parked: PRD §Non-Goals — single-user product in MVP; shared finance introduces permission and conflict-resolution complexity out of scope for v1.
 - **Native mobile app** — Why parked: PRD §Non-Goals — a responsive web app reaches mobile browsers without a separate build and release pipeline.
-- **Editing a savings goal (changing amount or timeframe)** — Why parked: shape-notes v2-backlog decision — delete-only suffices for MVP to keep recalculation complexity bounded (FR-008 commentary).
 - **Promotions checker / cheaper-alternatives suggestions** — Why parked: shape-notes §v2 backlog — scoped out so the MVP recommendations engine stays focused on category-level cuts.
 - **Cross-goal deduplication of suggestions** — Why parked: FR-010 commentary — per-goal independence chosen for MVP; cross-goal conflict resolution is a v2 concern.
 

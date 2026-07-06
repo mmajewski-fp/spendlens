@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { createGoal, deleteGoal, getUserGoals } from "@/lib/services/savings-goals";
+import { createGoal, deleteGoal, getGoalById, getUserGoals, updateGoal } from "@/lib/services/savings-goals";
 import { createTransactions, getUserTransactions } from "@/lib/services/transactions";
 
 import { adminClient, createTestUser, deleteTestUser, type TestUser } from "./helpers/users";
@@ -95,5 +95,36 @@ describe("Risk #5: ownership isolation", () => {
 
     const aGoals = await getUserGoals(userA.client);
     expect(aGoals.map((g) => g.id)).toEqual([aGoalId]); // A's own goals unaffected (zero rows deleted)
+  });
+
+  it("A cannot update B's goal — cross-user update is rejected and leaves B's goal unchanged", async () => {
+    // RLS scopes UPDATE to the owner; A targeting B's id matches zero rows, so
+    // .update().select().single() errors — updateGoal rejects rather than silently
+    // mutating nothing.
+    await expect(
+      updateGoal(userA.client, bGoalId, {
+        name: "hijacked",
+        target_amount: 999_999,
+        target_date: "2030-01-01",
+      }),
+    ).rejects.toThrow();
+
+    const bGoal = await getGoalById(userB.client, bGoalId); // read back as B
+    expect(bGoal?.name).toBe("B goal"); // B's goal SURVIVES unchanged
+    expect(bGoal?.target_amount).toBe(200_000);
+  });
+
+  it("A can update its own goal (positive control)", async () => {
+    const updated = await updateGoal(userA.client, aGoalId, {
+      name: "A goal renamed",
+      target_amount: 123_456,
+      target_date: "2028-03-01",
+    });
+    expect(updated.name).toBe("A goal renamed");
+    expect(updated.target_amount).toBe(123_456);
+
+    const readBack = await getGoalById(userA.client, aGoalId); // change persisted under A
+    expect(readBack?.name).toBe("A goal renamed");
+    expect(readBack?.target_amount).toBe(123_456);
   });
 });

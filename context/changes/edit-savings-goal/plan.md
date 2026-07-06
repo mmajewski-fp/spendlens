@@ -383,29 +383,29 @@ update. No data migration.
 
 #### Automated
 
-- [x] 2.1 Type checking / build passes: `npm run build`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Full unit suite passes: `npx vitest run`
+- [x] 2.1 Type checking / build passes: `npm run build` — 70038aa
+- [x] 2.2 Linting passes: `npm run lint` — 70038aa
+- [x] 2.3 Full unit suite passes: `npx vitest run` — 70038aa
 
 #### Manual
 
-- [x] 2.4 Each goal card shows an Edit button revealing a prefilled inline form
-- [x] 2.5 Saving a change updates the card in place and persists across reload
-- [x] 2.6 Cancel discards edits and restores the display row unchanged
-- [x] 2.7 A failed save keeps the form open and shows an inline error
-- [x] 2.8 Editing an expired goal's name (past date unchanged) saves successfully
-- [x] 2.9 Dashboard / recommendations reflect an edited amount/date after navigation
+- [x] 2.4 Each goal card shows an Edit button revealing a prefilled inline form — 70038aa
+- [x] 2.5 Saving a change updates the card in place and persists across reload — 70038aa
+- [x] 2.6 Cancel discards edits and restores the display row unchanged — 70038aa
+- [x] 2.7 A failed save keeps the form open and shows an inline error — 70038aa
+- [x] 2.8 Editing an expired goal's name (past date unchanged) saves successfully — 70038aa
+- [x] 2.9 Dashboard / recommendations reflect an edited amount/date after navigation — 70038aa
 
 ### Phase 3: Integration ownership test + docs refresh
 
 #### Automated
 
-- [ ] 3.1 Integration suite passes (ad-hoc): `npm run test:integration`
-- [ ] 3.2 Full unit suite still passes: `npx vitest run`
-- [ ] 3.3 Linting passes: `npm run lint`
+- [x] 3.1 Integration suite passes (ad-hoc): `npm run test:integration`
+- [x] 3.2 Full unit suite still passes: `npx vitest run`
+- [x] 3.3 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.4 The new integration case fails if the UPDATE RLS policy is removed
-- [ ] 3.5 `roadmap.md` shows edit as a done slice and no longer lists it under Deferred
-- [ ] 3.6 `prd.md` FR-008 commentary reflects edit shipped
+- [x] 3.4 The new integration case fails if the UPDATE RLS policy is removed
+- [x] 3.5 `roadmap.md` shows edit as a done slice and no longer lists it under Deferred
+- [x] 3.6 `prd.md` FR-008 commentary reflects edit shipped

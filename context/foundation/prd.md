@@ -79,8 +79,8 @@ An individual with at least one concrete savings target (amount + timeframe) and
 - FR-007: User can have up to 3 active savings goals simultaneously. Priority: must-have
   > Socrates: Counter-argument considered: "Three goals may produce conflicting recommendations." Resolution: kept; the recommendations layer handles per-goal suggestions independently. Conflict resolution is a v2 concern.
 
-- FR-008: User can delete an existing savings goal. Priority: must-have
-  > Socrates: Counter-argument accepted: "Full editing creates recalculation complexity; delete is sufficient for MVP." Resolution: edit (change amount or timeframe) → v2 backlog. Delete only in MVP.
+- FR-008: User can delete an existing savings goal, and edit an existing goal's name, target amount, or timeframe. Priority: must-have
+  > Socrates: Counter-argument accepted: "Full editing creates recalculation complexity; delete is sufficient for MVP." Resolution (updated 2026-07-06): edit is now in scope and shipped. The recalculation-complexity concern that originally deferred it to v2 does not apply — recommendations are computed live server-side per request, so an edited goal flows into the next computation exactly like a deleted one (no cached suggestions to invalidate). Delete + edit both ship in MVP (roadmap S-05 / S-08).
 
 ### Recommendations
 - FR-009: User can view excessive spending alerts identifying categories where spending is disproportionately high. Priority: must-have
