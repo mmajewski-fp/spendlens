@@ -400,12 +400,12 @@ update. No data migration.
 
 #### Automated
 
-- [x] 3.1 Integration suite passes (ad-hoc): `npm run test:integration`
-- [x] 3.2 Full unit suite still passes: `npx vitest run`
-- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.1 Integration suite passes (ad-hoc): `npm run test:integration` — bec90fe
+- [x] 3.2 Full unit suite still passes: `npx vitest run` — bec90fe
+- [x] 3.3 Linting passes: `npm run lint` — bec90fe
 
 #### Manual
 
-- [x] 3.4 The new integration case fails if the UPDATE RLS policy is removed
-- [x] 3.5 `roadmap.md` shows edit as a done slice and no longer lists it under Deferred
-- [x] 3.6 `prd.md` FR-008 commentary reflects edit shipped
+- [x] 3.4 The new integration case fails if the UPDATE RLS policy is removed — bec90fe
+- [x] 3.5 `roadmap.md` shows edit as a done slice and no longer lists it under Deferred — bec90fe
+- [x] 3.6 `prd.md` FR-008 commentary reflects edit shipped — bec90fe
