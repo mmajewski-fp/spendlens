@@ -3,25 +3,15 @@ import { z } from "zod";
 import { createGoal } from "@/lib/services/savings-goals";
 import { createClient } from "@/lib/supabase";
 import { jsonResponse } from "@/lib/api";
+import { goalNameSchema, isoDateSchema, isFutureDate, targetAmountDollarsSchema } from "@/lib/goal-validation";
 import type { SavingsGoal } from "@/types";
 
 export const prerender = false;
 
-const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
 const createGoalSchema = z.object({
-  name: z.string().trim().min(1, "Goal name is required").max(100, "Goal name must be at most 100 characters"),
-  target_amount_dollars: z.number().positive("Target amount must be greater than 0"),
-  target_date: z
-    .string()
-    .regex(dateRegex, "Target date must be in YYYY-MM-DD format")
-    .refine((value) => {
-      const parsed = new Date(`${value}T00:00:00`);
-      if (Number.isNaN(parsed.getTime())) return false;
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return parsed.getTime() > today.getTime();
-    }, "Target date must be in the future"),
+  name: goalNameSchema,
+  target_amount_dollars: targetAmountDollarsSchema,
+  target_date: isoDateSchema.refine(isFutureDate, "Target date must be in the future"),
 });
 
 export const POST: APIRoute = async (context) => {
