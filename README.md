@@ -115,7 +115,17 @@ npx supabase stop
 
 The local Studio UI is available at `http://localhost:54323`.
 
-No application database tables or migrations are required yet — this project currently uses Supabase Auth's built-in `auth.users` table only.
+### Database migrations
+
+The application schema lives in `supabase/migrations/` (e.g. `20260527000000_data_schema_foundation.sql`). It creates the `categories`, `transactions`, and `savings_goals` tables, enables row-level security with per-user policies (`user_id = auth.uid()`), seeds the fixed category taxonomy, and installs the trigger enforcing the 3-active-goals cap.
+
+`npx supabase start` applies every pending migration automatically on first boot. To re-apply them against a running stack — dropping and recreating all local data — run:
+
+```bash
+npx supabase db reset
+```
+
+For a hosted project, push migrations with `npx supabase db push` (after `npx supabase link`). New migrations follow the `YYYYMMDDHHmmss_short_description.sql` naming convention.
 
 ### Using a cloud Supabase project instead
 
