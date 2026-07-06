@@ -3,7 +3,7 @@ project: SpendLens
 version: 1
 status: draft
 created: 2026-05-25
-updated: 2026-07-03
+updated: 2026-07-06
 prd_version: 1
 main_goal: market-feedback
 top_blocker: capacity
@@ -175,7 +175,7 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** The v2-backlog "recalculation complexity" concern is moot — recommendations are computed live per request, so an edited goal flows in exactly like a deleted one. The real risks are validation parity (server must enforce constraints the UI shows) and per-user isolation on the new UPDATE path (proven by an integration test).
-- **Status:** done (change-level: `implemented`, 2026-07-06 — service `updateGoal`/`getGoalById` + `PUT /api/goals/[id]` + inline edit UI + hermetic and integration tests shipped; not yet archived)
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -217,3 +217,4 @@ What's already in place in the codebase as of 2026-05-25 (auto-researched + user
 - **S-03: A signed-in user with imported transactions can browse a full list of expenses and incomes from connected accounts, each row showing its assigned category.** — Archived 2026-07-03 → `context/archive/2026-07-02-transactions-list/`. Lesson: —.
 - **S-05: A signed-in user can delete one of their existing savings goals; the goal disappears from the goal list and from any recommendations that referenced it.** — Archived 2026-07-03 → `context/archive/2026-07-03-delete-savings-goal/`. Lesson: —.
 - **S-07: A signed-in user with imported transactions can export their categorized transactions to a downloadable file.** — Archived 2026-07-03 → `context/archive/2026-07-03-export-transactions/`. Lesson: —.
+- **S-08: A signed-in user can edit one of their existing savings goals — changing its name, target amount, or timeframe — from the goals page; the change persists under their account and flows into the next recommendations computation.** — Archived 2026-07-06 → `context/archive/2026-07-06-edit-savings-goal/`. Lesson: —.
