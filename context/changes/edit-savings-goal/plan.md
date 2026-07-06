@@ -367,34 +367,34 @@ update. No data migration.
 
 #### Automated
 
-- [x] 1.1 Type checking / build passes: `npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 PUT handler tests pass: `npx vitest run "src/pages/api/goals/[id].test.ts"`
-- [x] 1.4 Full unit suite passes: `npx vitest run`
+- [x] 1.1 Type checking / build passes: `npm run build` — ca0a6b4
+- [x] 1.2 Linting passes: `npm run lint` — ca0a6b4
+- [x] 1.3 PUT handler tests pass: `npx vitest run "src/pages/api/goals/[id].test.ts"` — ca0a6b4
+- [x] 1.4 Full unit suite passes: `npx vitest run` — ca0a6b4
 
 #### Manual
 
-- [x] 1.5 PUT with a valid body on an own goal returns 200 and the updated goal
-- [x] 1.6 PUT on a nonexistent id returns 404
-- [x] 1.7 Unauthenticated PUT returns 401
-- [x] 1.8 Name-only edit of a goal with a past target_date succeeds (no future-date error)
+- [x] 1.5 PUT with a valid body on an own goal returns 200 and the updated goal — ca0a6b4
+- [x] 1.6 PUT on a nonexistent id returns 404 — ca0a6b4
+- [x] 1.7 Unauthenticated PUT returns 401 — ca0a6b4
+- [x] 1.8 Name-only edit of a goal with a past target_date succeeds (no future-date error) — ca0a6b4
 
 ### Phase 2: Inline edit-in-place UI
 
 #### Automated
 
-- [ ] 2.1 Type checking / build passes: `npm run build`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Full unit suite passes: `npx vitest run`
+- [x] 2.1 Type checking / build passes: `npm run build`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Full unit suite passes: `npx vitest run`
 
 #### Manual
 
-- [ ] 2.4 Each goal card shows an Edit button revealing a prefilled inline form
-- [ ] 2.5 Saving a change updates the card in place and persists across reload
-- [ ] 2.6 Cancel discards edits and restores the display row unchanged
-- [ ] 2.7 A failed save keeps the form open and shows an inline error
-- [ ] 2.8 Editing an expired goal's name (past date unchanged) saves successfully
-- [ ] 2.9 Dashboard / recommendations reflect an edited amount/date after navigation
+- [x] 2.4 Each goal card shows an Edit button revealing a prefilled inline form
+- [x] 2.5 Saving a change updates the card in place and persists across reload
+- [x] 2.6 Cancel discards edits and restores the display row unchanged
+- [x] 2.7 A failed save keeps the form open and shows an inline error
+- [x] 2.8 Editing an expired goal's name (past date unchanged) saves successfully
+- [x] 2.9 Dashboard / recommendations reflect an edited amount/date after navigation
 
 ### Phase 3: Integration ownership test + docs refresh
 

@@ -38,9 +38,79 @@ export default function GoalsManager({ initialGoals }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editAmountDollars, setEditAmountDollars] = useState("");
+  const [editDate, setEditDate] = useState("");
 
   const minTargetDate = useMemo(() => getTomorrowDateString(), []);
   const atGoalCap = goals.length >= 3;
+
+  function startEdit(goal: SavingsGoal) {
+    setError(null);
+    setEditingId(goal.id);
+    setEditName(goal.name);
+    setEditAmountDollars((goal.target_amount / 100).toString());
+    setEditDate(goal.target_date);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setError(null);
+  }
+
+  async function handleUpdate(goal: SavingsGoal, e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (savingId) return;
+
+    setError(null);
+
+    const amount = Number.parseFloat(editAmountDollars);
+    if (!editName.trim()) {
+      setError("Goal name is required");
+      return;
+    }
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setError("Target amount must be greater than 0");
+      return;
+    }
+    if (!editDate) {
+      setError("Target date is required");
+      return;
+    }
+
+    setSavingId(goal.id);
+
+    try {
+      const response = await fetch(`/api/goals/${goal.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editName.trim(),
+          target_amount_dollars: amount,
+          target_date: editDate,
+        }),
+      });
+
+      const payload = (await response.json().catch(() => ({}))) as { goal?: SavingsGoal; error?: string };
+
+      if (!response.ok) {
+        setError(payload.error ?? "Failed to update goal");
+        return;
+      }
+
+      if (payload.goal) {
+        const updated = payload.goal;
+        setGoals((current) => current.map((g) => (g.id === goal.id ? updated : g)));
+        setEditingId(null);
+      }
+    } catch {
+      setError("Failed to update goal. Please try again.");
+    } finally {
+      setSavingId(null);
+    }
+  }
 
   async function handleDelete(goal: SavingsGoal) {
     if (deletingId) return;
@@ -128,29 +198,112 @@ export default function GoalsManager({ initialGoals }: Props) {
           <p className="text-sm text-blue-100/70">No savings goals yet. Create your first goal below.</p>
         ) : (
           <ul className="space-y-3">
-            {goals.map((goal) => (
-              <li
-                key={goal.id}
-                className="flex items-start justify-between gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-4"
-              >
-                <div className="min-w-0">
-                  <p className="mb-2 font-medium text-white">{goal.name}</p>
-                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-blue-100/80">
-                    <span>Target: {formatCents(goal.target_amount)}</span>
-                    <span>By: {goal.target_date}</span>
-                    <span>{getMonthsRemainingLabel(goal.target_date)}</span>
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  onClick={() => void handleDelete(goal)}
-                  disabled={deletingId !== null}
-                  className="shrink-0 border border-rose-400/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20"
+            {goals.map((goal) => {
+              const isEditing = editingId === goal.id;
+              const rowBusy = savingId !== null || deletingId !== null;
+              const otherRowActive = editingId !== null && !isEditing;
+
+              if (isEditing) {
+                return (
+                  <li key={goal.id} className="rounded-xl border border-white/10 bg-white/5 px-4 py-4">
+                    <form onSubmit={(e) => void handleUpdate(goal, e)} className="space-y-4">
+                      <FormField
+                        id={`edit-name-${goal.id}`}
+                        label="Goal name"
+                        value={editName}
+                        onChange={setEditName}
+                        maxLength={100}
+                        icon={<Target className="size-4" />}
+                      />
+                      <FormField
+                        id={`edit-amount-${goal.id}`}
+                        label="Target amount (USD)"
+                        type="number"
+                        value={editAmountDollars}
+                        onChange={setEditAmountDollars}
+                        step="0.01"
+                        min="0.01"
+                        icon={<DollarSign className="size-4" />}
+                      />
+                      <div>
+                        <label htmlFor={`edit-date-${goal.id}`} className="mb-1 block text-sm text-blue-100/80">
+                          Target date
+                        </label>
+                        <div className="relative">
+                          <span className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-white/40">
+                            <Calendar className="size-4" />
+                          </span>
+                          <input
+                            id={`edit-date-${goal.id}`}
+                            name={`edit-date-${goal.id}`}
+                            type="date"
+                            value={editDate}
+                            onChange={(e) => {
+                              setEditDate(e.target.value);
+                            }}
+                            className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 pl-10 text-white focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                      {error && <p className="text-sm text-red-300">{error}</p>}
+                      <div className="flex gap-3">
+                        <Button
+                          type="submit"
+                          disabled={savingId !== null}
+                          className="border border-white/20 bg-white/10 text-white hover:bg-white/20"
+                        >
+                          {savingId === goal.id ? "Saving…" : "Save"}
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={cancelEdit}
+                          disabled={savingId !== null}
+                          className="border border-white/10 bg-transparent text-blue-100/80 hover:bg-white/10"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </form>
+                  </li>
+                );
+              }
+
+              return (
+                <li
+                  key={goal.id}
+                  className="flex items-start justify-between gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-4"
                 >
-                  {deletingId === goal.id ? "Deleting…" : "Delete"}
-                </Button>
-              </li>
-            ))}
+                  <div className="min-w-0">
+                    <p className="mb-2 font-medium text-white">{goal.name}</p>
+                    <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-blue-100/80">
+                      <span>Target: {formatCents(goal.target_amount)}</span>
+                      <span>By: {goal.target_date}</span>
+                      <span>{getMonthsRemainingLabel(goal.target_date)}</span>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 gap-2">
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        startEdit(goal);
+                      }}
+                      disabled={rowBusy || otherRowActive}
+                      className="border border-white/20 bg-white/10 text-white hover:bg-white/20"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => void handleDelete(goal)}
+                      disabled={rowBusy || otherRowActive}
+                      className="border border-rose-400/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/20"
+                    >
+                      {deletingId === goal.id ? "Deleting…" : "Delete"}
+                    </Button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
