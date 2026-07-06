@@ -92,7 +92,9 @@ export const PUT: APIRoute = async (context) => {
     });
     return jsonResponse({ goal }, 200);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update savings goal";
-    return jsonResponse({ error: message }, 500);
+    // Log the real error server-side; return a generic message so raw DB
+    // phrasing (constraint/column names) never reaches the client.
+    console.error("PUT /api/goals/[id] failed:", error);
+    return jsonResponse({ error: "Failed to update savings goal" }, 500);
   }
 };

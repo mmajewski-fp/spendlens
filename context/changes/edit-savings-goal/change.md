@@ -1,7 +1,7 @@
 ---
 change_id: edit-savings-goal
 title: Edit savings goal
-status: implemented
+status: impl_reviewed
 created: 2026-07-06
 updated: 2026-07-06
 ---
