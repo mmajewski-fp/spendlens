@@ -1,6 +1,13 @@
 # build output
 dist/
 
+# playwright e2e artifacts
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+tests/e2e/.auth/
+
 # stryker mutation testing (generated; local-only run)
 .stryker-tmp/
 reports/

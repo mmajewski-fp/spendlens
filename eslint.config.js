@@ -68,6 +68,24 @@ const astroConfig = tseslint.config({
   },
 });
 
+// Node support scripts for the E2E suite (fault-injection proxy, etc.). These run
+// under Node, not the app's typed project, so give them Node globals and relax the
+// type-aware "unsafe any" rules that fire on raw node:http request objects.
+const e2eNodeSupportConfig = tseslint.config({
+  files: ["tests/e2e/support/**/*.mjs"],
+  languageOptions: {
+    globals: { process: true, console: true, Buffer: true },
+  },
+  rules: {
+    "no-console": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
@@ -76,4 +94,5 @@ export default tseslint.config(
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
   eslintPluginPrettier,
+  e2eNodeSupportConfig,
 );
