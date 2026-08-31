@@ -1,0 +1,117 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    branches: [main]
+    # `labeled` is here for the on-demand rerun: adding `ai-cr:review` to a PR
+    # re-runs the review without pushing an empty commit.
+    types: [opened, synchronize, reopened, labeled]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+# A second push should not race the first review into the same comment.
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: Review the diff
+    # Without this, every label change on a PR would burn a review.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.action != 'labeled' ||
+      github.event.label.name == 'ai-cr:review'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # The default checkout is shallow, so `git diff` against the base has
+          # nothing to compare with and silently produces an empty diff.
+          fetch-depth: 0
+
+      - name: Compute the diff under review
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref || github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=0 origin "${BASE_REF}"
+          # Three dots: changes this branch introduced, not changes that landed
+          # on the base since it forked.
+          git diff "origin/${BASE_REF}...HEAD" > review.diff
+          echo "Diff is $(wc -l < review.diff) lines."
+
+      - name: Review
+        id: review
+        uses: ./.github/actions/ai-reviewer
+        with:
+          api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          diff-file: review.diff
+          pr-title: ${{ github.event.pull_request.title }}
+          pr-body: ${{ github.event.pull_request.body }}
+
+      - name: Publish the review as a PR comment
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          COMMENT_FILE: ${{ steps.review.outputs.comment-file }}
+        run: |
+          set -euo pipefail
+          MARKER='<!-- ai-code-review -->'
+          printf '%s\n\n' "$MARKER" > comment-body.md
+          cat "$COMMENT_FILE" >> comment-body.md
+
+          # Update in place instead of stacking a new comment on every push, so
+          # the PR keeps one review that reflects the current head.
+          existing=$(gh api "repos/${REPO}/issues/${PR}/comments" --paginate \
+            --jq "[.[] | select(.body | startswith(\"${MARKER}\")) | .id] | first // empty")
+
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/${REPO}/issues/comments/${existing}" -F body=@comment-body.md >/dev/null
+            echo "Updated comment ${existing}."
+          else
+            gh api -X POST "repos/${REPO}/issues/${PR}/comments" -F body=@comment-body.md >/dev/null
+            echo "Posted a new review comment."
+          fi
+
+      - name: Label the pull request
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          VERDICT: ${{ steps.review.outputs.verdict }}
+        run: |
+          set -euo pipefail
+          gh label create 'ai-cr:passed' --repo "$REPO" --color 0e8a16 --description 'AI review passed'  2>/dev/null || true
+          gh label create 'ai-cr:failed' --repo "$REPO" --color d73a4a --description 'AI review failed'  2>/dev/null || true
+          gh label create 'ai-cr:review' --repo "$REPO" --color 0075ca --description 'Re-run the AI review' 2>/dev/null || true
+
+          if [ "$VERDICT" = "pass" ]; then add='ai-cr:passed'; remove='ai-cr:failed'
+          else                             add='ai-cr:failed'; remove='ai-cr:passed'
+          fi
+
+          gh pr edit "$PR" --repo "$REPO" --add-label "$add" --remove-label "$remove" 2>/dev/null \
+            || gh pr edit "$PR" --repo "$REPO" --add-label "$add"
+          # Consume the rerun trigger so the label does not sit there staling.
+          gh pr edit "$PR" --repo "$REPO" --remove-label 'ai-cr:review' 2>/dev/null || true
+
+      # A separate step so the comment and labels are always published first —
+      # a failing review should still tell you why before it turns the check red.
+      - name: Gate
+        env:
+          VERDICT: ${{ steps.review.outputs.verdict }}
+          LOWEST: ${{ steps.review.outputs.lowest-score }}
+        run: |
+          set -euo pipefail
+          if [ "$VERDICT" != "pass" ]; then
+            echo "::error::AI code review failed (lowest criterion score ${LOWEST}/10). See the PR comment."
+            exit 1
+          fi
+          echo "AI code review passed (lowest criterion score ${LOWEST}/10)."

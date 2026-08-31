@@ -1,0 +1,107 @@
+name: AI Reviewer
+description: Score a diff against the team's code review criteria and return a gate-able verdict
+
+branding:
+  icon: check-circle
+  color: purple
+
+inputs:
+  api-key:
+    description: Anthropic API key for the review model.
+    required: true
+  diff-file:
+    description: >-
+      Path to a file containing the diff to review. A file rather than a string:
+      diffs are multi-line and full of shell metacharacters, so passing one
+      through an action input or GITHUB_OUTPUT is a quoting accident waiting to
+      happen.
+    required: true
+  pr-title:
+    description: Pull request title, used as review context.
+    required: false
+    default: ""
+  pr-body:
+    description: Pull request description, used as review context.
+    required: false
+    default: ""
+  agent-dir:
+    description: Directory holding the agent package, relative to the workspace.
+    required: false
+    default: scripts/code-review-agent
+  model:
+    description: Override the review model. Defaults to the SDK's default model.
+    required: false
+    default: ""
+  comment-file:
+    description: Where to write the rendered PR comment.
+    required: false
+    default: ai-review.md
+
+outputs:
+  verdict:
+    description: "`pass` or `fail`, computed from the scores by the agent's gate."
+    value: ${{ steps.agent.outputs.verdict }}
+  lowest-score:
+    description: The lowest criterion score in the review, 1-10.
+    value: ${{ steps.agent.outputs.lowest-score }}
+  comment-file:
+    description: Path to the rendered PR comment.
+    value: ${{ inputs.comment-file }}
+
+runs:
+  using: composite
+  steps:
+    - name: Configure node
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: npm
+        cache-dependency-path: ${{ inputs.agent-dir }}/package-lock.json
+
+    # --omit=dev leaves out the eval toolchain (promptfoo and friends, ~700
+    # packages) which the review itself never touches.
+    - name: Install agent dependencies
+      run: npm ci --omit=dev
+      shell: bash
+      working-directory: ${{ inputs.agent-dir }}
+
+    - name: Run review
+      id: agent
+      shell: bash
+      working-directory: ${{ inputs.agent-dir }}
+      # Every untrusted value travels via env, never interpolated into the script.
+      # pr-title and pr-body are written by whoever opened the PR; a title like
+      # `"; rm -rf / #` must be data, not code.
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.api-key }}
+        CODE_REVIEW_MODEL: ${{ inputs.model }}
+        PR_TITLE: ${{ inputs.pr-title }}
+        PR_BODY: ${{ inputs.pr-body }}
+        DIFF_FILE: ${{ inputs.diff-file }}
+        COMMENT_FILE: ${{ inputs.comment-file }}
+      run: |
+        set -euo pipefail
+
+        if [ -z "${ANTHROPIC_API_KEY}" ]; then
+          echo "::error::api-key is empty. Set the ANTHROPIC_API_KEY repository secret." >&2
+          exit 1
+        fi
+
+        # The agent separates "the change failed review" (2) from "the review
+        # could not run" (1). Only the second one means the pipeline is broken,
+        # so the exit code is inspected rather than allowed to abort the step.
+        set +e
+        npm run --silent review -- \
+          --diff-file "${GITHUB_WORKSPACE}/${DIFF_FILE}" \
+          --markdown-out "${GITHUB_WORKSPACE}/${COMMENT_FILE}" \
+          --github-output
+        code=$?
+        set -e
+
+        case "${code}" in
+          0|2) echo "Review completed (exit ${code})." ;;
+          *)
+            echo "::error::The review agent failed to run (exit ${code})." >&2
+            exit "${code}"
+            ;;
+        esac

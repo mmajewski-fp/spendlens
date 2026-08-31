@@ -1,0 +1,45 @@
+diff --git a/src/lib/format.ts b/src/lib/format.ts
+index 4a1b2c3..9d8e7f6 100644
+--- a/src/lib/format.ts
++++ b/src/lib/format.ts
+@@ -1,3 +1,15 @@
+ export function formatCents(cents: number): string {
+   return (cents / 100).toFixed(2);
+ }
++
++/**
++ * Sort category names for display. Uses codepoint ordering rather than
++ * localeCompare so the result is identical on every machine and CI worker.
++ */
++export function sortCategoryNames(names: readonly string[]): string[] {
++  return [...names].sort((a, b) => {
++    if (a === b) return 0;
++    return a < b ? -1 : 1;
++  });
++}
+diff --git a/src/lib/format.test.ts b/src/lib/format.test.ts
+index 1122334..5566778 100644
+--- a/src/lib/format.test.ts
++++ b/src/lib/format.test.ts
+@@ -1,5 +1,5 @@
+ import { describe, expect, it } from "vitest";
+-import { formatCents } from "./format";
++import { formatCents, sortCategoryNames } from "./format";
+ 
+ describe("formatCents", () => {
+   it("renders cents as a two-decimal amount", () => {
+@@ -7,3 +7,17 @@ describe("formatCents", () => {
+   });
+ });
++
++describe("sortCategoryNames", () => {
++  it("orders names by codepoint, not by ambient locale", () => {
++    expect(sortCategoryNames(["Zakupy", "Auto", "Éclair"])).toEqual(["Auto", "Zakupy", "Éclair"]);
++  });
++
++  it("does not mutate the input", () => {
++    const input = ["b", "a"];
++    sortCategoryNames(input);
++    expect(input).toEqual(["b", "a"]);
++  });
++});

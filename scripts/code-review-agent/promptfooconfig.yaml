@@ -1,0 +1,100 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: >-
+  Code review agent — model comparison and prompt regression gate. Runs the exact
+  system/user prompt the agent uses (imported from src/prompt.js) against the same
+  fixtures on several models, so "cheaper or stronger?" is answered by a matrix
+  rather than by a feeling about one PR.
+
+# The fixtures are real diffs, and real React diffs contain `style={{ ... }}`.
+# promptfoo renders vars through Nunjucks by default, which reads `{{` as an
+# expression and fails on it. Templating buys us nothing here — the prompt is a
+# JS function, not a template — so turn it off rather than escaping every fixture.
+env:
+  PROMPTFOO_DISABLE_TEMPLATING: "true"
+
+prompts:
+  - id: file://src/prompt.js:promptfooPrompt
+    label: team-review-v1
+
+# One OpenRouter key covers every candidate, so swapping a model in or out is a
+# one-line change here rather than a new account and a new secret.
+providers:
+  - id: openrouter:anthropic/claude-haiku-4.5
+    label: haiku-4.5 · cheap candidate
+    config:
+      temperature: 0
+      max_tokens: 4000
+  - id: openrouter:anthropic/claude-sonnet-4.6
+    label: sonnet-4.6 · strong candidate
+    config:
+      temperature: 0
+      max_tokens: 4000
+  - id: openrouter:openai/gpt-5-mini
+    label: gpt-5-mini · non-Anthropic control
+    config:
+      temperature: 0
+      max_tokens: 4000
+
+defaultTest:
+  options:
+    # Strip a stray ```json fence before asserting — see evals/transform.js.
+    transform: file://evals/transform.js
+    # Grade rubrics on OpenRouter too, so OPENROUTER_API_KEY is the only key needed.
+    provider: openrouter:anthropic/claude-sonnet-4.6
+  assert:
+    # The gate is mechanical, so a response that is not parseable JSON in the
+    # agreed shape is a hard failure no matter how good the prose is.
+    - type: is-json
+    - type: javascript
+      value: file://evals/asserts.js:hasValidShape
+
+tests:
+  - description: React 16 → 19 migration with three planted defects must be blocked
+    vars:
+      prTitle: "refactor(goals): migrate GoalProgressCard to hooks"
+      prBody: |
+        Converts the last class component to a function component ahead of the
+        React 19 bump. Behaviour is unchanged.
+      diff: file://evals/fixtures/react19-migration.diff
+    assert:
+      - type: javascript
+        value: file://evals/asserts.js:gateFails
+      # The verdict being right is not enough — a model can block for the wrong
+      # reason. This checks the review actually names the three planted defects.
+      - type: llm-rubric
+        value: |
+          The review must identify all three defects introduced by this migration:
+
+          1. `static defaultProps = { currency: "PLN" }` was dropped when the class
+             became a function component, so `currency` is now possibly undefined and
+             `currency.toUpperCase()` will throw. (React 19 also removed defaultProps
+             support for function components, so re-adding it that way would not help.)
+          2. The `setInterval` inside `useEffect` is never cleared — the old
+             `componentWillUnmount` called `clearInterval`, and the effect returns no
+             cleanup function. The timer leaks and keeps polling after unmount.
+          3. The effect's dependency array is `[]` while the effect reads `goalId`, so
+             the old `componentDidUpdate` refetch-on-goalId-change behaviour is lost and
+             the fetch closes over a stale `goalId`.
+
+          Pass only if all three are described. Wording may differ; the substance must
+          match. Do not pass a review that merely says the component "should be tested"
+          or lists generic hook advice without naming these specific defects.
+
+  - description: Clean, well-tested change must not be blocked
+    vars:
+      prTitle: "feat(format): deterministic category name ordering"
+      prBody: |
+        Adds sortCategoryNames with codepoint ordering (no localeCompare) plus tests.
+      diff: file://evals/fixtures/clean-change.diff
+    assert:
+      # A reviewer that blocks everything is as useless as one that blocks nothing.
+      # This case is what stops the suite from rewarding indiscriminate severity.
+      - type: javascript
+        value: file://evals/asserts.js:gatePasses
+      - type: llm-rubric
+        value: |
+          The review must not invent blocking problems. This change adds a pure,
+          non-mutating sort that deliberately avoids localeCompare, plus tests for
+          ordering and non-mutation. Style suggestions are fine, but pass only if the
+          review refrains from claiming a correctness, security or determinism defect,
+          and does not demand tests that are already present in the diff.

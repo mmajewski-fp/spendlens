@@ -1,0 +1,123 @@
+diff --git a/src/components/GoalProgressCard.tsx b/src/components/GoalProgressCard.tsx
+index 8f2a1c4..b93de70 100644
+--- a/src/components/GoalProgressCard.tsx
++++ b/src/components/GoalProgressCard.tsx
+@@ -1,92 +1,71 @@
+-import { Component } from "react";
++import { useEffect, useState } from "react";
+ import { cn } from "@/lib/utils";
+ import { formatCents } from "@/lib/format";
+ import type { SavingsGoal } from "@/types";
+ 
+ interface Props {
+   goalId: string;
+   currency?: string;
+   className?: string;
+ }
+ 
+-interface State {
+-  goal: SavingsGoal | null;
+-  error: string | null;
+-}
+-
+-export class GoalProgressCard extends Component<Props, State> {
+-  static defaultProps = { currency: "PLN" };
+-
+-  state: State = { goal: null, error: null };
+-
+-  private pollTimer?: ReturnType<typeof setInterval>;
+-
+-  componentDidMount() {
+-    void this.load();
+-    this.pollTimer = setInterval(() => void this.load(), 30_000);
+-  }
+-
+-  componentDidUpdate(prevProps: Props) {
+-    if (prevProps.goalId !== this.props.goalId) void this.load();
+-  }
+-
+-  componentWillUnmount() {
+-    if (this.pollTimer) clearInterval(this.pollTimer);
+-  }
+-
+-  private async load() {
+-    try {
+-      const res = await fetch(`/api/goals/${this.props.goalId}`);
+-      if (!res.ok) throw new Error("Failed to load goal");
+-      this.setState({ goal: (await res.json()) as SavingsGoal, error: null });
+-    } catch {
+-      this.setState({ error: "Could not load this goal." });
+-    }
+-  }
+-
+-  render() {
+-    const { goal, error } = this.state;
+-    const { currency, className } = this.props;
+-
+-    if (error) return <p className="text-destructive text-sm">{error}</p>;
+-    if (!goal) return <p className="text-muted-foreground text-sm">Loading…</p>;
+-
+-    const pct = Math.min(100, Math.round((goal.savedCents / goal.targetCents) * 100));
+-
+-    return (
+-      <article className={cn("rounded-lg border p-4", className)}>
+-        <h3 className="font-medium">{goal.name}</h3>
+-        <p className="text-muted-foreground text-sm">
+-          {formatCents(goal.savedCents)} of {formatCents(goal.targetCents)} {currency.toUpperCase()}
+-        </p>
+-        <div className="bg-muted mt-2 h-2 rounded" role="progressbar" aria-valuenow={pct}>
+-          <div className="bg-primary h-2 rounded" style={{ width: `${pct}%` }} />
+-        </div>
+-      </article>
+-    );
+-  }
+-}
++export function GoalProgressCard({ goalId, currency, className }: Props) {
++  const [goal, setGoal] = useState<SavingsGoal | null>(null);
++  const [error, setError] = useState<string | null>(null);
++
++  useEffect(() => {
++    async function load() {
++      try {
++        const res = await fetch(`/api/goals/${goalId}`);
++        if (!res.ok) throw new Error("Failed to load goal");
++        setGoal((await res.json()) as SavingsGoal);
++        setError(null);
++      } catch {
++        setError("Could not load this goal.");
++      }
++    }
++
++    void load();
++    setInterval(() => void load(), 30_000);
++  }, []);
++
++  if (error) return <p className="text-destructive text-sm">{error}</p>;
++  if (!goal) return <p className="text-muted-foreground text-sm">Loading…</p>;
++
++  const pct = Math.min(100, Math.round((goal.savedCents / goal.targetCents) * 100));
++
++  return (
++    <article className={cn("rounded-lg border p-4", className)}>
++      <h3 className="font-medium">{goal.name}</h3>
++      <p className="text-muted-foreground text-sm">
++        {formatCents(goal.savedCents)} of {formatCents(goal.targetCents)} {currency.toUpperCase()}
++      </p>
++      <div className="bg-muted mt-2 h-2 rounded" role="progressbar" aria-valuenow={pct}>
++        <div className="bg-primary h-2 rounded" style={{ width: `${pct}%` }} />
++      </div>
++    </article>
++  );
++}
+diff --git a/src/pages/goals/[id].astro b/src/pages/goals/[id].astro
+index 2c1d9ab..7ee4410 100644
+--- a/src/pages/goals/[id].astro
++++ b/src/pages/goals/[id].astro
+@@ -1,6 +1,6 @@
+ ---
+ import Layout from "@/layouts/Layout.astro";
+-import { GoalProgressCard } from "@/components/GoalProgressCard";
++import { GoalProgressCard } from "@/components/GoalProgressCard";
+ 
+ const { id } = Astro.params;
+ ---
