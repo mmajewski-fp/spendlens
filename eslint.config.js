@@ -86,6 +86,26 @@ const e2eNodeSupportConfig = tseslint.config({
   },
 });
 
+// Installer scripts for the publishable AI toolkit package. These run under Node
+// in a *consumer's* repo, not in this app's typed project, so give them Node
+// globals and relax the type-aware "unsafe any" rules that fire on JSON.parse and
+// raw fs results. Same rationale as e2eNodeSupportConfig above.
+const aiToolkitConfig = tseslint.config({
+  files: ["packages/ai-toolkit/*.js"],
+  languageOptions: {
+    globals: { process: true, console: true, Buffer: true },
+  },
+  rules: {
+    "no-console": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
@@ -95,4 +115,5 @@ export default tseslint.config(
   astroConfig,
   eslintPluginPrettier,
   e2eNodeSupportConfig,
+  aiToolkitConfig,
 );
