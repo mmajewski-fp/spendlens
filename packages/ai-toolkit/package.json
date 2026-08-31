@@ -1,0 +1,26 @@
+{
+  "name": "@mmajewski-fp/ai-toolkit",
+  "version": "0.1.0",
+  "description": "Team AI artifacts distributed through GitHub Packages",
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmajewski-fp/spendlens.git",
+    "directory": "packages/ai-toolkit"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "files": ["skills/", "rules/", "install.js", "uninstall.js", "README.md"],
+  "bin": {
+    "ai-toolkit": "./install.js"
+  },
+  "scripts": {
+    "validate": "node validate.js",
+    "postinstall": "node install.js"
+  }
+}

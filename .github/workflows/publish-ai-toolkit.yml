@@ -1,0 +1,111 @@
+name: Publish AI Toolkit
+
+# Publishes packages/ai-toolkit to GitHub Packages. Deliberately no AWS: auth is
+# the ephemeral GITHUB_TOKEN, so there is no secret to provision or rotate.
+#
+# Path-filtered so app-only commits don't trigger a publish attempt. Note that a
+# filtered-out push reports no status for these jobs at all — if you make them
+# required checks, add the same paths filter to the branch protection rule or
+# unrelated PRs will block forever.
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "packages/ai-toolkit/**"
+      - ".github/workflows/publish-ai-toolkit.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "packages/ai-toolkit/**"
+      - ".github/workflows/publish-ai-toolkit.yml"
+
+permissions:
+  contents: read
+  packages: write
+
+defaults:
+  run:
+    working-directory: packages/ai-toolkit
+
+jobs:
+  validate:
+    name: Validate package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@mmajewski-fp"
+          cache: npm
+          cache-dependency-path: packages/ai-toolkit/package-lock.json
+
+      # --ignore-scripts: postinstall is the consumer installer. Letting it run
+      # here would have it try to install the toolkit into this repo.
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Validate package contents
+        run: npm run validate
+
+      - name: Verify the tarball builds
+        run: npm pack --dry-run
+
+  publish:
+    name: Publish to GitHub Packages
+    needs: validate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@mmajewski-fp"
+          cache: npm
+          cache-dependency-path: packages/ai-toolkit/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Validate package contents
+        run: npm run validate
+
+      # Publishing an already-published version is a hard 409. Without this the
+      # workflow goes red on every push to main that isn't a version bump.
+      - name: Check whether this version is already published
+        id: published
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Checking $NAME@$VERSION"
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "already=true" >> "$GITHUB_OUTPUT"
+            echo "$NAME@$VERSION is already published — skipping."
+          else
+            echo "already=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish
+        if: steps.published.outputs.already == 'false'
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          if [ "${{ steps.published.outputs.already }}" = "true" ]; then
+            echo "### Skipped — \`$NAME@$VERSION\` already published" >> "$GITHUB_STEP_SUMMARY"
+            echo "Bump the version in \`packages/ai-toolkit/package.json\` to publish." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### Published \`$NAME@$VERSION\`" >> "$GITHUB_STEP_SUMMARY"
+          fi
