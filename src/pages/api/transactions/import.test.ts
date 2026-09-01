@@ -41,10 +41,10 @@ describe("POST /api/transactions/import — handler HTTP concerns", () => {
     );
   });
 
-  it("maps a service error to 500 with a message-only body (no PII)", async () => {
+  it("maps a service error to 500 with a generic body (no raw error details)", async () => {
     mockedImport.mockRejectedValue(new Error("connection reset"));
     const res = await POST(makeContext({}));
     expect(res.status).toBe(500);
-    expect(await res.json()).toEqual({ error: "connection reset" });
+    expect(await res.json()).toEqual({ error: "Failed to import transactions" });
   });
 });

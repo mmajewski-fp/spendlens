@@ -38,8 +38,10 @@ export const DELETE: APIRoute = async (context) => {
     await deleteGoal(supabase, id);
     return new Response(null, { status: 204 });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to delete savings goal";
-    return jsonResponse({ error: message }, 500);
+    // Log the real error server-side; return a generic message so raw DB
+    // phrasing (constraint/column names) never reaches the client.
+    console.error("DELETE /api/goals/[id] failed:", error);
+    return jsonResponse({ error: "Failed to delete savings goal" }, 500);
   }
 };
 
