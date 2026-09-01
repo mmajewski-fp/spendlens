@@ -52,10 +52,11 @@ describe("POST /api/goals — handler HTTP concerns", () => {
     expect(res.status).toBe(409);
   });
 
-  it("maps any other service error to 500", async () => {
+  it("maps any other service error to 500 with a generic body (no raw error details)", async () => {
     mockedCreateGoal.mockRejectedValue(new Error("connection reset"));
     const res = await POST(makeContext({ body: validBody }));
     expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: "Failed to create savings goal" });
   });
 
   it("returns 201 and converts dollars → cents on success", async () => {

@@ -57,9 +57,10 @@ describe("GET /api/transactions/export — handler HTTP concerns", () => {
     expect(body).toContain("2026-07-01,Lunch,Dining,expense,12.50");
   });
 
-  it("maps a service error to 500", async () => {
+  it("maps a service error to 500 with a generic body (no raw error details)", async () => {
     mockedGetUserTransactions.mockRejectedValue(new Error("connection reset"));
     const res = await GET(makeContext());
     expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: "Failed to export transactions" });
   });
 });

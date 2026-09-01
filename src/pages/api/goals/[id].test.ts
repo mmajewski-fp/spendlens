@@ -43,10 +43,11 @@ describe("DELETE /api/goals/[id] — handler HTTP concerns", () => {
     expect(mockedDeleteGoal).toHaveBeenCalledWith(expect.anything(), "goal-42");
   });
 
-  it("maps a service error to 500", async () => {
+  it("maps a service error to 500 with a generic body (no raw error details)", async () => {
     mockedDeleteGoal.mockRejectedValue(new Error("connection reset"));
     const res = await DELETE(makeContext({}));
     expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: "Failed to delete savings goal" });
   });
 });
 
@@ -130,9 +131,10 @@ describe("PUT /api/goals/[id] — handler HTTP concerns", () => {
     );
   });
 
-  it("maps a service error to 500", async () => {
+  it("maps a service error to 500 with a generic body (no raw error details)", async () => {
     mockedUpdateGoal.mockRejectedValue(new Error("connection reset"));
     const res = await PUT(makePutContext({}));
     expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: "Failed to update savings goal" });
   });
 });
