@@ -106,8 +106,16 @@ const aiToolkitConfig = tseslint.config({
   },
 });
 
+// scripts/ holds self-contained packages with their own package.json, tsconfig
+// and dependencies. The app's CI installs only the root deps, so type-aware
+// linting there resolves none of their imports and reports every SDK call as
+// "a type that could not be resolved". They are type-checked by their own CI
+// job instead — see the `agent` job in .github/workflows/ci.yml.
+const scriptsIgnoreConfig = tseslint.config({ ignores: ["scripts/**"] });
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
+  scriptsIgnoreConfig,
   baseConfig,
   reactConfig,
   eslintPluginAstro.configs["flat/recommended"],

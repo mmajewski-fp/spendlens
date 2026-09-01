@@ -23,3 +23,21 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+  # scripts/code-review-agent is its own package, excluded from the app's lint
+  # because the app's install doesn't provide its dependencies. Type-check it
+  # here so it isn't simply unchecked.
+  agent:
+    name: Code review agent
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: scripts/code-review-agent/package-lock.json
+      - run: npm ci
+        working-directory: scripts/code-review-agent
+      - run: npm run typecheck
+        working-directory: scripts/code-review-agent
