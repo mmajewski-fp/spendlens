@@ -49,7 +49,10 @@ jobs:
         id: review
         uses: ./.github/actions/ai-reviewer
         with:
+          # Whichever secret the repository actually has wins; the action
+          # rejects having both.
           api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           diff-file: review.diff
           pr-title: ${{ github.event.pull_request.title }}
           pr-body: ${{ github.event.pull_request.body }}

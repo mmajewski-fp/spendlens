@@ -7,8 +7,18 @@ branding:
 
 inputs:
   api-key:
-    description: Anthropic API key for the review model.
-    required: true
+    description: >-
+      Anthropic API key for the review model, from the Claude Console. Supply
+      this or `oauth-token`, not both.
+    required: false
+    default: ""
+  oauth-token:
+    description: >-
+      Subscription OAuth token from `claude setup-token`, for teams billing the
+      review to a Claude subscription rather than to API credits. Supply this or
+      `api-key`, not both.
+    required: false
+    default: ""
   diff-file:
     description: >-
       Path to a file containing the diff to review. A file rather than a string:
@@ -74,6 +84,7 @@ runs:
       # `"; rm -rf / #` must be data, not code.
       env:
         ANTHROPIC_API_KEY: ${{ inputs.api-key }}
+        CLAUDE_CODE_OAUTH_TOKEN: ${{ inputs.oauth-token }}
         CODE_REVIEW_MODEL: ${{ inputs.model }}
         PR_TITLE: ${{ inputs.pr-title }}
         PR_BODY: ${{ inputs.pr-body }}
@@ -82,8 +93,22 @@ runs:
       run: |
         set -euo pipefail
 
-        if [ -z "${ANTHROPIC_API_KEY}" ]; then
-          echo "::error::api-key is empty. Set the ANTHROPIC_API_KEY repository secret." >&2
+        if [ -n "${ANTHROPIC_API_KEY}" ] && [ -n "${CLAUDE_CODE_OAUTH_TOKEN}" ]; then
+          echo "::error::Both api-key and oauth-token are set. Supply exactly one." >&2
+          exit 1
+        fi
+
+        # An empty ANTHROPIC_API_KEY still outranks the OAuth token in Claude
+        # Code's credential precedence, so drop whichever one wasn't supplied
+        # rather than passing it through blank.
+        if [ -n "${ANTHROPIC_API_KEY}" ]; then
+          unset CLAUDE_CODE_OAUTH_TOKEN
+          echo "Authenticating with an API key."
+        elif [ -n "${CLAUDE_CODE_OAUTH_TOKEN}" ]; then
+          unset ANTHROPIC_API_KEY
+          echo "Authenticating with a subscription OAuth token."
+        else
+          echo "::error::No credential. Set either the ANTHROPIC_API_KEY or the CLAUDE_CODE_OAUTH_TOKEN repository secret." >&2
           exit 1
         fi
 

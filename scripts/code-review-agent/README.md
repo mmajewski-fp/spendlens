@@ -54,8 +54,16 @@ against the base (`fetch-depth: 0`, otherwise the diff is empty), hands it to th
 
 Re-run on demand by adding the `ai-cr:review` label.
 
-**Required secret:** `ANTHROPIC_API_KEY`. Without it the action fails loudly rather
-than passing silently.
+**Required secret:** one of two, and the action rejects having both.
+
+- `ANTHROPIC_API_KEY` — a key from the Claude Console. Billed as API usage.
+- `CLAUDE_CODE_OAUTH_TOKEN` — a one-year token from `claude setup-token`, run in a
+  terminal and pasted into `gh secret set`. Bills the review to a Claude
+  subscription (Pro, Max, Team or Enterprise) instead of API credits. Note it is
+  tied to the account of whoever generated it, so a shared repo is better served
+  by an API key.
+
+With neither, the action fails loudly rather than passing silently.
 
 ## Evals
 
