@@ -39,11 +39,18 @@ jobs:
           BASE_REF: ${{ github.event.pull_request.base.ref || github.event.repository.default_branch }}
         run: |
           set -euo pipefail
-          git fetch --no-tags --depth=0 origin "${BASE_REF}"
-          # Three dots: changes this branch introduced, not changes that landed
-          # on the base since it forked.
-          git diff "origin/${BASE_REF}...HEAD" > review.diff
-          echo "Diff is $(wc -l < review.diff) lines."
+          git fetch --no-tags origin "${BASE_REF}"
+          # Diff from the fork point, so the review sees what this branch added
+          # and not what landed on the base since it forked. FETCH_HEAD rather
+          # than origin/<ref>, which a fetch of a single branch need not update.
+          base=$(git merge-base FETCH_HEAD HEAD)
+          git diff "${base}" HEAD > review.diff
+
+          lines=$(wc -l < review.diff)
+          echo "Diff is ${lines} lines (base ${base})."
+          if [ "${lines}" -eq 0 ]; then
+            echo "::warning::Empty diff against ${BASE_REF} — nothing to review."
+          fi
 
       - name: Review
         id: review
