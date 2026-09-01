@@ -47,10 +47,13 @@ export const POST: APIRoute = async (context) => {
     });
     return jsonResponse({ goal }, 201);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to create savings goal";
+    const message = error instanceof Error ? error.message : "";
     if (message.includes("3 active savings goals")) {
       return jsonResponse({ error: "You have reached the maximum of 3 active savings goals." }, 409);
     }
-    return jsonResponse({ error: message }, 500);
+    // Log the real error server-side; return a generic message so raw DB
+    // phrasing (constraint/column names) never reaches the client.
+    console.error("POST /api/goals failed:", error);
+    return jsonResponse({ error: "Failed to create savings goal" }, 500);
   }
 };

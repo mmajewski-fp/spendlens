@@ -33,7 +33,9 @@ export const GET: APIRoute = async (context) => {
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to export transactions";
-    return jsonResponse({ error: message }, 500);
+    // Log the real error server-side; return a generic message so raw DB
+    // phrasing (constraint/column names) never reaches the client.
+    console.error("GET /api/transactions/export failed:", error);
+    return jsonResponse({ error: "Failed to export transactions" }, 500);
   }
 };

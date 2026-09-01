@@ -38,7 +38,9 @@ export const POST: APIRoute = async (context) => {
     const { imported } = await importTransactions(supabase, context.locals.user.id, todayUtc());
     return jsonResponse({ imported }, 200);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to import transactions";
-    return jsonResponse({ error: message }, 500);
+    // Log the real error server-side; return a generic message so raw DB
+    // phrasing (constraint/column names) never reaches the client.
+    console.error("POST /api/transactions/import failed:", error);
+    return jsonResponse({ error: "Failed to import transactions" }, 500);
   }
 };
