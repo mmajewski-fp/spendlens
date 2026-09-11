@@ -20,11 +20,17 @@ concurrency:
 jobs:
   review:
     name: Review the diff
-    # Without this, every label change on a PR would burn a review.
+    # Two guards, both scoped to pull_request so workflow_dispatch always runs:
+    #  - a fork PR gets no secrets and a read-only GITHUB_TOKEN on a public repo,
+    #    so the review would fail on missing credentials rather than on the code.
+    #    Skip it cleanly instead of showing a red check nobody can act on.
+    #  - without the label check, every label change on a PR would burn a review.
     if: >-
-      github.event_name != 'pull_request' ||
+      (github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository) &&
+      (github.event_name != 'pull_request' ||
       github.event.action != 'labeled' ||
-      github.event.label.name == 'ai-cr:review'
+      github.event.label.name == 'ai-cr:review')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
