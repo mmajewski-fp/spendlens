@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-22
+> Last updated: 2026-09-11
 
 ## 1. Strategy
 
@@ -84,35 +84,44 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status as artifacts appear on disk.
 
-| #   | Phase name                                      | Goal (one line)                                                                                      | Risks covered | Test types                               | Status  | Change folder                                      |
-| --- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------- | ------- | -------------------------------------------------- |
-| 1   | Runner bootstrap + first wedge test             | Stand up Vitest, wire it into CI, and land the first real assertion on the cut-math                  | #1, #2        | unit                                     | planned | context/changes/testing-runner-bootstrap-wedge/    |
-| 2   | Wedge-math contract                             | Full behavioral coverage of the cut engine: correct amounts, degenerate-input guards, ranking order  | #1, #2, #3    | unit (parameterized + edge)              | planned | context/changes/wedge-math-contract/               |
-| 3   | Data-tier guardrails                            | Prove ownership isolation and the 3-goal cap hold against real DB constraints a mock would lie about | #5, #6        | integration (real Supabase, ad-hoc gate) | planned | context/changes/data-tier-guardrails/              |
-| 4   | Threshold oracle + SSR error surface + cookbook | Assert the (resolved) alert threshold and the SSR error contract; fill in §6 cookbook                | #4, #7        | unit / hermetic + cookbook               | planned | context/changes/alert-threshold-and-error-surface/ |
+| #   | Phase name                                      | Goal (one line)                                                                                      | Risks covered | Test types                               | Status   | Change folder                                                 |
+| --- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------- | -------- | ------------------------------------------------------------- |
+| 1   | Runner bootstrap + first wedge test             | Stand up Vitest, wire it into CI, and land the first real assertion on the cut-math                  | #1, #2        | unit                                     | complete | context/archive/2026-06-22-testing-runner-bootstrap-wedge/    |
+| 2   | Wedge-math contract                             | Full behavioral coverage of the cut engine: correct amounts, degenerate-input guards, ranking order  | #1, #2, #3    | unit (parameterized + edge)              | complete | context/archive/2026-06-23-wedge-math-contract/               |
+| 3   | Data-tier guardrails                            | Prove ownership isolation and the 3-goal cap hold against real DB constraints a mock would lie about | #5, #6        | integration (real Supabase, ad-hoc gate) | complete | context/archive/2026-06-23-data-tier-guardrails/              |
+| 4   | Threshold oracle + SSR error surface + cookbook | Assert the (resolved) alert threshold and the SSR error contract; fill in §6 cookbook                | #4, #7        | unit / hermetic + cookbook               | complete | context/archive/2026-06-24-alert-threshold-and-error-surface/ |
 
 **Status vocabulary** (fixed — parser literals): `not started` → `change opened`
 → `researched` → `planned` → `implementing` → `complete`.
 
 Phase 1 deliberately bundles runner bootstrap with the first wedge-math
 assertion (the test base is `none`; nothing is testable until the runner
-exists). Phase 4's Risk #4 is **blocked on resolving Open Question Q2** — the
-excessive-spending threshold — before any assertion can be written without
-mirroring the shipped code.
+exists). Phase 4's Risk #4 was blocked on Open Question Q2 — the
+excessive-spending threshold — which was **resolved on 2026-06-24** (recorded in
+PRD §Open Questions): a category is disproportionate when its 30-day spend
+exceeds `floor(monthly_income × 0.12)`. The oracle therefore comes from that PRD
+decision, not from the shipped constant.
+
+**Rollout complete (2026-09-11).** All four phases shipped and their change
+folders are archived; every risk in §2 now has at least one test asserting it.
+Risks #1–#4 are covered by the unit suite (`npm run test`), #5–#6 by
+`npm run test:integration` (real local Supabase), and #7 by both a hermetic unit
+test on the service error contract and an end-to-end render check
+(`tests/e2e/ssr-error-surface.spec.ts`).
 
 ## 4. Stack
 
 The classic test base for this project. AI-native tools (if any) carry a
 `checked:` date so future readers can see which lines need re-verification.
 
-| Layer                    | Tool                                                            | Version  | Notes                                                                                           |
-| ------------------------ | --------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------- |
-| unit + integration       | Vitest (Vite-native; hypothesis — research confirms in Phase 1) | none yet | none yet — see §3 Phase 1. Astro is Vite-based, so Vitest is the conventional fit               |
-| hermetic / stub client   | stubbed Supabase client                                         | none yet | none yet — see §3 Phase 4 (partial-failure and error-contract branches)                         |
-| integration (real infra) | local Supabase (`npx supabase start`, Docker)                   | n/a      | none yet — see §3 Phase 3. Ad-hoc gate (not every commit) — local infra is expensive            |
-| mutation (selective)     | Stryker                                                         | none yet | optional, narrow-scope after §3 Phase 2 on the cut-math module only — not a CI gate             |
-| e2e                      | Playwright                                                      | n/a      | deferred — full SSR page render verification is out of scope for this rollout (course Lesson 4) |
-| accessibility            | axe-core                                                        | n/a      | not planned this rollout                                                                        |
+| Layer                    | Tool                                          | Version    | Notes                                                                                                                                                      |
+| ------------------------ | --------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| unit + integration       | Vitest (Vite-native)                          | 3.2.6      | wired in CI (`npm run test`, TZ=UTC); unit glob `src/**/*.test.ts`, integration via `vitest.config.integration.ts`                                         |
+| hermetic / stub client   | stubbed Supabase client                       | n/a        | in use for error-contract branches — see §6.3 (`savings-goals.test.ts`, `api/goals.test.ts`)                                                               |
+| integration (real infra) | local Supabase (`npx supabase start`, Docker) | CLI 2.23.4 | in use: `npm run test:integration` (`tests/integration/`). Ad-hoc gate, NOT per-commit — local infra is expensive                                          |
+| mutation (selective)     | Stryker                                       | 9.6.1      | in use ad-hoc: `npm run test:mutation`, narrow scope on the cut-math module — not a CI gate                                                                |
+| e2e                      | Playwright                                    | 1.61.1     | added after the rollout (course Lesson 4): `npm run test:e2e`, specs in `tests/e2e/` + rules in `tests/e2e/E2E_RULES.md`. Needs local Supabase — NOT in CI |
+| accessibility            | axe-core                                      | n/a        | not planned this rollout                                                                                                                                   |
 
 **Stack grounding tools (current session):**
 

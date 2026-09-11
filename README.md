@@ -4,6 +4,8 @@
 
 A goal-anchored spending insight app. Users connect a (simulated) bank, set savings goals, and receive specific expense-cutting suggestions tied to each goal.
 
+**Live:** <https://spendlens-self.vercel.app> — production deployment of `main`.
+
 ## Tech Stack
 
 - [Astro](https://astro.build/) v6 — Modern web framework with server-first rendering
@@ -164,6 +166,8 @@ Route protection is handled in `src/middleware.ts`. Add paths to the `PROTECTED_
 
 ## Deployment
 
+The app is live at **<https://spendlens-self.vercel.app>** (production alias; `spendlens-git-main-mmajewski-1226s-projects.vercel.app` tracks `main`).
+
 This project deploys to [Vercel](https://vercel.com/) via the official `@astrojs/vercel` adapter. The platform decision and operational notes (preview URLs, rollback, secrets, logs) are documented in [context/foundation/infrastructure.md](./context/foundation/infrastructure.md). The full first-release migration plan lives in [context/deployment/deploy-plan.md](./context/deployment/deploy-plan.md).
 
 ### One-time project setup
@@ -193,7 +197,7 @@ vercel env add SUPABASE_KEY preview
 
 ## CI
 
-GitHub Actions runs `lint + build` on every push and PR to `main` (see [.github/workflows/ci.yml](.github/workflows/ci.yml)). Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step. Vercel deploys are triggered by the Git integration, not by this workflow.
+GitHub Actions runs `lint + test + build` on every push and PR to `main` (see [.github/workflows/ci.yml](.github/workflows/ci.yml)). Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step. Vercel deploys are triggered by the Git integration, not by this workflow.
 
 ## License
 
